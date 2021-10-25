@@ -46,3 +46,8 @@ vector<bool> generate_bit_array(int size)
 
   return bit_array;
 }
+
+void process_vector(Cube* cube, Vector* vector)
+{
+  int one = 1;
+}
