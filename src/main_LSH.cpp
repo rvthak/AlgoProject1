@@ -1,6 +1,8 @@
 #include <iostream>
 #include "Args.h"
 #include "utils.h"
+#include "Vector.h"
+#include "parser.h"
 
 int main(int argc, char *argv[]){
 	print_header();
@@ -8,12 +10,13 @@ int main(int argc, char *argv[]){
 	// Read Args
 	ARGS_LSH *args = read_args_LSH(argc,argv);
 	//print_args_LSH(args);
-
-	// Get record amount
-	std::cout << " Input File lines: " << getFileLines(args->input_file) << std::endl;
 	
-	// Free Args
+	// Parse the input files
+	VectorArray *input_vecs = parse_Vector_input(args->input_file);
+
+	// Garbage collection
 	free_args_LSH(args);
+	free_VectorArray(input_vecs);
 
 	return 0;
 }
