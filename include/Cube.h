@@ -1,6 +1,10 @@
 #ifndef CUBE
 #define CUBE
 
+#include <vector>
+
+using namespace std;
+
 #define DEFAULT_DIMENSIONS_K 14
 #define DEFAULT_NEAREST_NEIGHBORS 1
 #define DEFAULT_VECTORS_TO_CHECK_M 10
@@ -23,5 +27,7 @@ Cube* create_cube(int dimensions_k,
                   int radious);
 
 void free_cube(Cube* cube);
+
+vector<bool> generate_bit_array(int size);
 
 #endif

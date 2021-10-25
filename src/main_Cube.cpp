@@ -1,4 +1,5 @@
 #include <iostream>
+#include "Cube.h"
 #include "Args.h"
 #include "utils.h"
 
@@ -11,7 +12,7 @@ int main(int argc, char *argv[]){
 
 	// Get record amount
 	std::cout << " Input File lines: " << getFileLines(args->input_file) << std::endl;
-	
+
 	// Free Args
 	free_args_Cube(args);
 
