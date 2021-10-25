@@ -1,4 +1,6 @@
 #include "Cube.h"
+#include "Vector.h"
+
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
@@ -20,6 +22,8 @@ Cube* create_cube(int dimensions_k,
   cube->vectors_to_check_M = vectors_to_check_M;
   cube->probes = probes;
   cube->radious = radious;
+
+  cube->bit_array = generate_bit_array(cube->dimensions_k);
 
   return cube;
 }

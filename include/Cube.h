@@ -1,6 +1,8 @@
 #ifndef CUBE
 #define CUBE
 
+#include "Vector.h"
+
 #include <vector>
 
 using namespace std;
@@ -17,6 +19,7 @@ typedef struct{
   int vectors_to_check_M;
   int probes;
   int radious;
+  vector<bool> bit_array;
 } Cube;
 
 
