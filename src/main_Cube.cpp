@@ -1,4 +1,5 @@
 #include <iostream>
+#include "Cube.h"
 #include "Args.h"
 #include "utils.h"
 #include "Vector.h"
