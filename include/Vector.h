@@ -2,20 +2,29 @@
 #define VECTOR
 
 #include <vector>
+#include <string>
 
-typedef struct{
-	unsigned id;
-	std::vector<int> vec;
-}Vector;
+// Vector Representation Struct
+struct Vector{
+	unsigned id;			// The Vector's Id
+	std::vector<int> vec;	// The Vector Itself
 
-typedef struct{
-	unsigned size;
-	Vector *vecs;
-}VectorArray;
+	void print();	// Print the Vector Contents
+};
 
-VectorArray *create_VectorArray(unsigned size);
-void free_VectorArray(VectorArray *vecarr);
+// Array Struct Used to parse and store Vectors
+struct VectorArray{
+	unsigned size;	// The size of the Array == The amount of Vectors
+	Vector *array;	// The Vector Storage Array itself
 
-int add_VectorArray(VectorArray *vecarr, unsigned index, int id, std::vector<int> v);
+	VectorArray(std::string filename);
+	~VectorArray();
+
+	void print();	// Print all the Vectors of the Array
+
+private:
+	int add_vector(unsigned index, int id, std::vector<int> data);
+	void parse_input(std::string filename);
+};
 
 #endif

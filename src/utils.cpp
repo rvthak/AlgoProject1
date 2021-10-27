@@ -14,7 +14,7 @@ unsigned getFileLines(string name){
 } // Returns Zero in case the file does not exits
 
 // Get the file line width, based on the width of the first line
-unsigned getFileLineLength(std::string name){
+unsigned getFileLineLength(string name){
 	ifstream file(name);
 	string firstline;
 	int tmp;
@@ -34,6 +34,49 @@ unsigned getFileLineLength(std::string name){
 	return count;
 } // Returns Zero in case the file does not exits
 
+// Check if a given file exists
+bool fileExists(string name){
+    ifstream file(name.c_str());
+    return file.good();
+}
+
+// Get a binary answer to the given question
+bool question(string q){
+	cout << "\033[36;1m (?) Question : \033[0m" << q << " : (y/n)" << endl;
+
+	string str;
+	while(1){
+		cout << "     ";
+		cin >> str;
+
+		if (cin.fail()){
+			cin.clear(); 
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cout << "\033[36;1m (?) Invalid input :\033[0m Try again : (y/n)" << endl;
+		}
+		else if(str=="y"){
+			cin.get();
+			return true;
+		}
+		else if(str=="n"){
+			cin.get();
+			return false;
+		}
+		else{
+			cout << "\033[36;1m (?) Invalid input :\033[0m Try again : (y/n)" << endl;
+		}
+	}
+}
+
+// Prints the chars of the string independently
+void printStr(char *str){
+	int i=0;
+	while( str[i] != 0){
+		printf("%c", str[i]);
+		i++;
+	} printf("\n");
+}
+
 // Print the "UI header"
 void print_header(void){
 	cout << "\033[33;1m _____________________________________________________________________________________ " << endl;
@@ -45,3 +88,13 @@ void print_header(void){
 	cout << "|_____________________________________________________________________________________|\033[0m" << endl;
 	cout << endl;
 }
+
+// Print the "UI foooter"
+void print_footer(void){
+	cout << "\033[33;1m _____________________________________________________________________________________ " << endl;
+	cout << "|                                                                                     |" << endl;
+	cout << "|\033[0m                                \033[36;1m Shutting Down\033[0m                                       \033[33;1m|" << endl;
+	cout << "|_____________________________________________________________________________________|\033[0m" << endl;
+	cout << endl;
+}
+
