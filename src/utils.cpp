@@ -68,6 +68,13 @@ bool question(string q){
 	}
 }
 
+// Modulo : Always positive
+unsigned mod(int x, int y){
+	if( x<0 ){ x*=(-1); }
+	if( y<0 ){ y*=(-1); }
+	return x%y;
+}
+
 // Prints the chars of the string independently
 void printStr(char *str){
 	int i=0;
