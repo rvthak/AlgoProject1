@@ -24,8 +24,6 @@ Cube* create_cube(int dimensions_k,
   cube->probes = probes;
   cube->radious = radious;
 
-  cube->bit_array = generate_bit_array(cube->dimensions_k);
-
   return cube;
 }
 
@@ -41,7 +39,7 @@ vector<int> generate_bit_array(int size)
   for (int i = 0; i < size; i++)
   {
     int random_int = rand() % 1;
-    bit_array.push_back(random_bit);
+    bit_array.push_back(random_int);
   }
 
   return bit_array;
@@ -51,7 +49,7 @@ int convert_bit_array_to_decimal(vector<int> bit_array)
 {
   int decimal;
 
-  for (int i = 0; i < bit_array.size(); i++)
+  for (long unsigned i = 0; i < bit_array.size(); i++)
   {
     int bit = bit_array[i];
     int bit_value = bit * pow(2, i);
