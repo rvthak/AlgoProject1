@@ -1,8 +1,9 @@
 #include "Vector.h"
 #include "utils.h"
-#include <iostream>
+#include <cmath>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 using namespace std;
 
@@ -60,6 +61,18 @@ void Vector::print(){
 	} cout << endl;
 }
 
+// Calculate the norm between "this" and p
+double Vector::l2(Vector *p){
+	int tmp;
+	double sum=0;
+
+	for(long unsigned i=0; i<(p->vec).size(); i++){
+		tmp = (this->vec)[i] - (p->vec)[i]; // No need for abs() since we always square the difference
+		sum += tmp * tmp;
+	}
+	return sqrt(sum);
+}
+
 // Parse the given file and load its records in the VectorArray
 void VectorArray::parse_input(string filename){
 
@@ -102,4 +115,9 @@ void VectorArray::parse_input(string filename){
 		// This line's Vector was loaded successfully
 		vecs_loaded++; 
 	}
+}
+
+// Naive search for the k Nearest Neighbors of the given query Vector
+void VectorArray::kNN_naive(Vector *query, std::string output){
+
 }
