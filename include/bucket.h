@@ -5,11 +5,11 @@
 
 // The Bucket linked list node
 struct Bucket_node{
-	Bucket_node *next;
-	Vector *data;
-	// Maybe also add ID here
+	Bucket_node *next;	// The next node in the linked list
+	Vector *data;		// A pointer to the Vector data of this node
+	unsigned ID;		// The ID of this Vector
 
-	Bucket_node(Vector *v);
+	Bucket_node(Vector *v, unsigned ID);
 	~Bucket_node();
 };
 
@@ -21,7 +21,8 @@ struct Bucket{
 	Bucket();
 	~Bucket();
 
-	int add(Vector *v);
+	int add(Vector *v, unsigned ID);
+	bool search(Vector *v);
 };
 
 #endif

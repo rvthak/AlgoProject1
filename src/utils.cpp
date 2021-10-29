@@ -1,8 +1,9 @@
 #include "utils.h"
+#include <cstdio>
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <algorithm>
-#include <sstream>
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -76,6 +77,11 @@ unsigned mod(int x, int y){
 	return x%y;
 }
 
+// Open the given if (if it exists) and clear all of its existing contents 
+void clearContents(string filename){
+	fopen(filename.c_str(), "w");
+}
+
 // Prints the chars of the string independently
 void printStr(char *str){
 	int i=0;
@@ -106,7 +112,7 @@ void print_footer(void){
 	cout << endl;
 }
 
-
+// Calculates the hamming distance between two given integers
 int hamming_distance(int a, int b)
 {
 	int x = a ^ b;
@@ -120,3 +126,4 @@ int hamming_distance(int a, int b)
  
 	return distance;
 }
+

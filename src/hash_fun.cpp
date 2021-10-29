@@ -1,5 +1,5 @@
 #include "utils.h"
-#include "hashfun.h"
+#include "hash_fun.h"
 #include "distributions.h"
 #include <math.h>
 #include <vector>
@@ -7,8 +7,8 @@
 #include <iostream>
 #include <functional>
 
-#define M_VALUE (2^32-5)
-#define W_VALUE 3 // in [2,6]
+#define M_VALUE ((2^32)-5)
+#define W_VALUE  3 // in [2,6]
 #define MAX_32_INT 2147483647
 
 H::H(unsigned v_size){
@@ -25,6 +25,8 @@ int H::hash(Vector *p){
 	return floor( (inner_product((p->vec).begin(), (p->vec).end(), (this->v).begin(), 0) + (this->t)) / (this->w) );
 }
 
+//------------------------------------------------------------------------------------------------------------------
+
 // Create the random hash functions "h" and the random values "r" and store them
 G::G(int k, unsigned tableSize, unsigned v_size){
 	this->M = M_VALUE;
@@ -34,30 +36,38 @@ G::G(int k, unsigned tableSize, unsigned v_size){
 	// Generate uniform random values for k "r"s
 	this->r = new int[k];
 	if( this->r == nullptr ){
-		cout << "\033[31;1m (!) Fatal Error:\033[0m Memory : Failed to allocate memory for 'r' values." << endl;
+		std::cout << "\033[31;1m (!) Fatal Error:\033[0m Memory : Failed to allocate memory for 'r' values." << std::endl;
 		exit(1);
 	}
 	for(int i=0; i<k; i++){ (this->r)[i] = uniform_distribution(0, MAX_32_INT); }
 
 	// Generate k random "h" functions
-	this->h = new H[k]{v_size};
-	if( this->h == nullptr ){
-		cout << "\033[31;1m (!) Fatal Error:\033[0m Memory : Failed to allocate memory for 'h' hash functions." << endl;
+	if( (this->h = new H*[k]) == nullptr ){ 
+		std::cout << "\033[31;1m (!) Fatal Error:\033[0m Memory : Failed to allocate memory for H[]." << std::endl;
 		exit(1);
+	}
+	for(int i=0; i<k; i++){
+		if( ((this->h)[i] = new H(v_size)) == nullptr ){
+			std::cout << "\033[31;1m (!) Fatal Error:\033[0m MultiHash Built : Failed to allocate memory for Hi." << std::endl;
+			exit(1);
+		}
 	}
 }
 
 G::~G(){
+	for(unsigned i=0; i<(this->k); i++){
+		delete (this->h)[i];
+	}
+	delete [] (this->h);
 	delete [] this->r;
-	delete [] this->h;
 }
 
 // Calculate the hash key of the given Vector (Sum-Based)
 // Based on the math type on slide 21 of "nnCluster.pdf"
 int G::hash(Vector *p){
 	int sum=0;
-	for(int i=0; i<(this->k); i++){
-		sum += mod( (this->r)[i] * (this->h)[i].hash(p) , this->M );
+	for(unsigned i=0; i<(this->k); i++){
+		sum += mod( (this->r)[i] * (this->h)[i]->hash(p) , this->M );
 	}
 	return mod( mod(sum, this->M) , this->tableSize );
 } 
@@ -65,8 +75,8 @@ int G::hash(Vector *p){
 // Calculate the ID of the given Vector (Sum-Based)
 int G::ID(Vector *p){
 	int sum=0;
-	for(int i=0; i<(this->k); i++){
-		sum += mod( (this->r)[i] * (this->h)[i].hash(p) , this->M );
+	for(unsigned i=0; i<(this->k); i++){
+		sum += mod( (this->r)[i] * (this->h)[i]->hash(p) , this->M );
 	}
 	return mod(sum, this->M);
 }
