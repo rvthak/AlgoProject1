@@ -2,6 +2,8 @@
 #include "Args.h"
 #include "utils.h"
 #include "Vector.h"
+#include "hash_lsh.h"
+
 
 int main(int argc, char *argv[]){
 	bool running = true;
@@ -25,10 +27,11 @@ int main(int argc, char *argv[]){
 		VectorArray input_vecs(args.input_file);
 		VectorArray query_vecs(args.query_file);
 
+		// Create the LSH Structs
+		MultiHash lsh(args.k, args.L, getFileLines(args.input_file)/4, getFileLineLength(args.input_file)-1);
 
-
-		query_vecs.print();
-		
+		// Load the input data into the structs
+		lsh.loadVectors(&input_vecs);
 
 
 		// Clear the old args
@@ -41,3 +44,6 @@ int main(int argc, char *argv[]){
 	print_footer();
 	return 0;
 }
+
+//------------------------------------------------------------------------------------------------------------------
+
