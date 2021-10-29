@@ -1,8 +1,9 @@
 #include "utils.h"
+#include <cstdio>
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <algorithm>
-#include <sstream>
 
 using namespace std;
 
@@ -75,6 +76,11 @@ unsigned mod(int x, int y){
 	return x%y;
 }
 
+// Open the given if (if it exists) and clear all of its existing contents 
+void clearContents(string filename){
+	fopen(filename.c_str(), "w");
+}
+
 // Prints the chars of the string independently
 void printStr(char *str){
 	int i=0;
@@ -104,4 +110,3 @@ void print_footer(void){
 	cout << "|_____________________________________________________________________________________|\033[0m" << endl;
 	cout << endl;
 }
-

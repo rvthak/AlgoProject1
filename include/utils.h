@@ -8,6 +8,7 @@ unsigned getFileLineLength(std::string name);
 bool fileExists(std::string name);
 
 unsigned mod(int x, int y);
+void clearContents(std::string filename);
 
 bool question(std::string q);
 void printStr(char *str);
