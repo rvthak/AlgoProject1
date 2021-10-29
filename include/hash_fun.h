@@ -1,7 +1,6 @@
 #ifndef HASH_FUNCTIONS
 #define HASH_FUNCTIONS
 
-#include <vector>
 #include "Vector.h"
 
 // Hash Function "h"
@@ -10,7 +9,7 @@ struct H{
 	double t;			// added Slight random variation (Uniformly in [0,w) )
 	unsigned w; 		// "Window" - NOT zero
 
-	H();
+	H(unsigned v_size);
 	~H();
 	int hash(Vector *p);
 };
@@ -22,8 +21,8 @@ struct G{
 	unsigned k;				// The amount of "h" hash functions
 
 	// We create both ri and hi randomly on struct init, so we need to store them
-	int *r;	 // An array storing the "ri" values
-	H *h;	 // An array storing the "hi" functions
+	int *r;	// The "ri" values
+	H **h;	// The "hi" functions
 
 	G(int k, unsigned tableSize, unsigned v_size);
 	~G();
