@@ -1,9 +1,10 @@
-#ifndef HASH
-#define HASH
+#ifndef HASH_LSH
+#define HASH_LSH
 
-#include "bucket.h"
+#include <string>
 #include "Vector.h"
-#include "hashfun.h"
+#include "bucket.h"
+#include "hash_fun.h"
 
 // Sinple Hash Table Struct that uses randomized Hash Functions
 struct HashTable{
@@ -19,13 +20,17 @@ struct HashTable{
 
 // Multiple Hash Tables used for LSH
 struct MultiHash{
-	HashTable *array;	// Array containing the Hash Tables
+	HashTable **array;	// Array containing the Hash Tables
 	unsigned amount;	// The amount of Hash Tables
 
 	MultiHash(int k, int L, unsigned tableSize, unsigned v_size);
 	~MultiHash();
 
 	void add(Vector *vec);
+	void loadVectors(VectorArray *arr);
+
+	void kNN_lsh(Vector *query, std::string output);
+	void range_search(Vector *query, double R, std::string output);
 };
 
 #endif
