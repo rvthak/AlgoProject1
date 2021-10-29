@@ -4,13 +4,14 @@
 #include <sstream>
 #include <iostream>
 #include <algorithm>
+#include <bits/stdc++.h>
 
 using namespace std;
 
 // Get the line count of the given file by counting the newline characters
 unsigned getFileLines(string name){
 	ifstream file(name);
-  	return count(istreambuf_iterator<char>(file), 
+  	return count(istreambuf_iterator<char>(file),
                  istreambuf_iterator<char>(),'\n');
 } // Returns Zero in case the file does not exits
 
@@ -31,7 +32,7 @@ unsigned getFileLineLength(string name){
 	while( line_stream >> tmp ){
 		count++;
 	}
-	
+
 	return count;
 } // Returns Zero in case the file does not exits
 
@@ -51,7 +52,7 @@ bool question(string q){
 		cin >> str;
 
 		if (cin.fail()){
-			cin.clear(); 
+			cin.clear();
 			cin.ignore(numeric_limits<streamsize>::max(), '\n');
 			cout << "\033[36;1m (?) Invalid input :\033[0m Try again : (y/n)" << endl;
 		}
@@ -110,3 +111,19 @@ void print_footer(void){
 	cout << "|_____________________________________________________________________________________|\033[0m" << endl;
 	cout << endl;
 }
+
+// Calculates the hamming distance between two given integers
+int hamming_distance(int a, int b)
+{
+	int x = a ^ b;
+	int distance = 0;
+
+	while (x > 0)
+	{
+		distance += x & 1;
+		x >>= 1;
+  }
+ 
+	return distance;
+}
+

@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <cmath>
 #include <iostream>
 #include <vector>
 
@@ -33,18 +34,32 @@ void free_cube(Cube* cube)
   delete cube;
 }
 
-vector<bool> generate_bit_array(int size)
+vector<int> generate_bit_array(int size)
 {
-  vector<bool> bit_array;
+  vector<int> bit_array;
 
   for (int i = 0; i < size; i++)
   {
     int random_int = rand() % 1;
-    bool random_bit = (random_int == 1) ? true : false;
     bit_array.push_back(random_bit);
   }
 
   return bit_array;
+}
+
+int convert_bit_array_to_decimal(vector<int> bit_array)
+{
+  int decimal;
+
+  for (int i = 0; i < bit_array.size(); i++)
+  {
+    int bit = bit_array[i];
+    int bit_value = bit * pow(2, i);
+    decimal += bit_value;
+    i++;
+  }
+
+  return decimal;
 }
 
 void process_vector(Cube* cube, Vector* vector)
