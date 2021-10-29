@@ -33,14 +33,13 @@ void free_cube(Cube* cube)
   delete cube;
 }
 
-vector<bool> generate_bit_array(int size)
+vector<int> generate_bit_array(int size)
 {
-  vector<bool> bit_array;
+  vector<int> bit_array;
 
   for (int i = 0; i < size; i++)
   {
     int random_int = rand() % 1;
-    bool random_bit = (random_int == 1) ? true : false;
     bit_array.push_back(random_bit);
   }
 
