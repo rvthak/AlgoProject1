@@ -15,4 +15,6 @@ void printStr(char *str);
 void print_header(void);
 void print_footer(void);
 
+int hamming_distance(int a, int b);
+
 #endif
