@@ -7,12 +7,6 @@
 
 using namespace std;
 
-#define DEFAULT_DIMENSIONS_K 14
-#define DEFAULT_NEAREST_NEIGHBORS 1
-#define DEFAULT_VECTORS_TO_CHECK_M 10
-#define DEFAULT_PROBES 2
-#define DEFAULT_RADIOUS 1000
-
 typedef struct{
 	int dimensions_k;
   int nearest_neighbors_N;
