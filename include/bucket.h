@@ -23,6 +23,7 @@ struct Bucket{
 
 	int add(Vector *v, unsigned ID);
 	bool search(Vector *v);
+	void print();
 };
 
 #endif

@@ -45,3 +45,14 @@ bool Bucket::search(Vector *v){
 	}
 	return false;
 }
+
+// Print the contents of the Bucket
+void Bucket::print(){
+	std::cout << std::endl << " (i) Printing Bucket List: " << std::endl;
+	
+	Bucket_node *cur = this->first;
+	while( cur != nullptr ){
+		cur->data->print();
+		cur = cur->next;
+	} std::cout << std::endl;
+}
