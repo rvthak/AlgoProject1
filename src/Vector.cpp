@@ -7,6 +7,28 @@
 
 using namespace std;
 
+// Prints all the data stored in a Vector
+void Vector::print(){
+	cout << " Id: " << this->id << endl << "   > ";
+	for (int val: this->vec){
+		cout << val << ' ';
+	} cout << endl;
+}
+
+// Calculate the norm between "this" and p
+double Vector::l2(Vector *p){
+	int tmp;
+	double sum=0;
+
+	for(long unsigned i=0; i<(p->vec).size(); i++){
+		tmp = (this->vec)[i] - (p->vec)[i]; // No need for abs() since we always square the difference
+		sum += tmp * tmp;
+	}
+	return sqrt(sum);
+}
+
+//------------------------------------------------------------------------------------------------------------------
+
 // Create a VectorArray containing the given file contents
 VectorArray::VectorArray(string filename){
 
@@ -51,26 +73,6 @@ void VectorArray::print(){
 		(this->array)[i].print();
 		cout << endl;
 	}
-}
-
-// Prints all the data stored in a Vector
-void Vector::print(){
-	cout << " Id: " << this->id << endl;
-	for (int val: this->vec){
-		cout << val << ' ';
-	} cout << endl;
-}
-
-// Calculate the norm between "this" and p
-double Vector::l2(Vector *p){
-	int tmp;
-	double sum=0;
-
-	for(long unsigned i=0; i<(p->vec).size(); i++){
-		tmp = (this->vec)[i] - (p->vec)[i]; // No need for abs() since we always square the difference
-		sum += tmp * tmp;
-	}
-	return sqrt(sum);
 }
 
 // Parse the given file and load its records in the VectorArray
@@ -118,6 +120,6 @@ void VectorArray::parse_input(string filename){
 }
 
 // Naive search for the k Nearest Neighbors of the given query Vector
-void VectorArray::kNN_naive(Vector *query, std::string output){
+void VectorArray::kNN_naive(Vector *query, unsigned k, std::string output){
 
 }

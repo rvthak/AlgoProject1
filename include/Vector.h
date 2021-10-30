@@ -21,7 +21,7 @@ struct VectorArray{
 	VectorArray(std::string filename);
 	~VectorArray();
 
-	void kNN_naive(Vector *query, std::string output);
+	void kNN_naive(Vector *query, unsigned k, std::string output);
 	void print();	// Print all the Vectors of the Array
 
 private:
