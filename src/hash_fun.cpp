@@ -86,6 +86,9 @@ int G::ID(Vector *p){
 
 F::F(unsigned k, unsigned dimensions)
 {
+	this->dimensions = dimensions;
+	this->table_size = pow(2, dimensions);
+
 	// Generate k random "h" functions
 	if((this->h = new H*[k]) == nullptr)
 	{
@@ -113,7 +116,20 @@ F::~F()
 
 int F::hash(Vector *p)
 {
+	int hash_key_from_array, final_hash_key;
+	std::vector<int> bit_array;
 
+	for(unsigned i = 0; i < (this->k); i++)
+	{
+		int h_key = (this->h)[i]->hash(p);
+		int bit = generate_bit_from_h_key(h_key);
+		bit_array.push_back(bit);
+	}
+
+	hash_key_from_array = convert_bit_array_to_decimal(bit_array);
+	final_hash_key = hash_key_from_array % (this->table_size);
+
+	return final_hash_key;
 }
 
 

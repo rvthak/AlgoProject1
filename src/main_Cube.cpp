@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
 
 
 
-		query_vecs.print();
+		// query_vecs.print();
 
 
 
