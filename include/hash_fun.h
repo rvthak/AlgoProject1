@@ -30,4 +30,20 @@ struct G{
 	int ID(Vector *p);
 };
 
+// CHRIS 01.11.2021 START
+
+struct F {
+	unsigned dimensions;
+	unsigned tableSize;     // The tableSize which comes from dimensions
+	unsigned k;				      // The amount of "h" hash functions
+	H **h; 						      // Array of h values
+
+	F(unsigned k, unsigned dimensions);
+	~F();
+
+	int hash(Vector *p);
+};
+
+// CHRIS 01.11.2021 END
+
 #endif

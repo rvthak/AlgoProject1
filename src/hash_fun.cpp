@@ -15,7 +15,7 @@ H::H(unsigned v_size){
 	this->t = uniform_distribution(0, W_VALUE-1);
 	this->w = W_VALUE;
 	this->v = normal_vector(0,1,v_size);
-}	
+}
 
 H::~H(){}
 
@@ -42,7 +42,7 @@ G::G(int k, unsigned tableSize, unsigned v_size){
 	for(int i=0; i<k; i++){ (this->r)[i] = uniform_distribution(0, MAX_32_INT); }
 
 	// Generate k random "h" functions
-	if( (this->h = new H*[k]) == nullptr ){ 
+	if( (this->h = new H*[k]) == nullptr ){
 		std::cout << "\033[31;1m (!) Fatal Error:\033[0m Memory : Failed to allocate memory for H[]." << std::endl;
 		exit(1);
 	}
@@ -70,7 +70,7 @@ int G::hash(Vector *p){
 		sum += mod( (this->r)[i] * (this->h)[i]->hash(p) , this->M );
 	}
 	return mod( mod(sum, this->M) , this->tableSize );
-} 
+}
 
 // Calculate the ID of the given Vector (Sum-Based)
 int G::ID(Vector *p){
@@ -80,3 +80,21 @@ int G::ID(Vector *p){
 	}
 	return mod(sum, this->M);
 }
+
+
+// CHRIS 01.11.2021 START
+
+F::F(unsigned k, unsigned dimensions)
+{
+	
+}
+
+F::~F(){
+	for(unsigned i=0; i<(this->k); i++){
+		delete (this->h)[i];
+	}
+
+}
+
+
+// CHRIS 01.11.2021 END
