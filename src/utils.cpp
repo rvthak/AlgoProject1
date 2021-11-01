@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iostream>
 #include <algorithm>
+#include <vector>
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -77,7 +78,7 @@ unsigned mod(int x, int y){
 	return x%y;
 }
 
-// Open the given if (if it exists) and clear all of its existing contents 
+// Open the given if (if it exists) and clear all of its existing contents
 void clearContents(string filename){
 	fopen(filename.c_str(), "w");
 }
@@ -123,7 +124,27 @@ int hamming_distance(int a, int b)
 		distance += x & 1;
 		x >>= 1;
   }
- 
+
 	return distance;
 }
 
+int convert_bit_array_to_decimal(std::vector<int> bit_array)
+{
+  int decimal;
+
+  for (long unsigned i = 0; i < bit_array.size(); i++)
+  {
+    int bit = bit_array[i];
+    int bit_value = bit * pow(2, i);
+    decimal += bit_value;
+    i++;
+  }
+
+  return decimal;
+}
+
+int generate_bit_from_h_key(int h_key)
+{
+	int bit = (h_key % 2 == 0) ? 1 : 0;
+	return bit;
+}

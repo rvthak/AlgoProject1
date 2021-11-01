@@ -3,6 +3,7 @@
 
 #include "Vector.h"
 
+
 // Hash Function "h"
 struct H{
 	std::vector<int> v;	// Vector based on Normal Distribution
@@ -29,5 +30,21 @@ struct G{
 	int hash(Vector *p);
 	int ID(Vector *p);
 };
+
+// CHRIS 01.11.2021 START
+
+struct F {
+	unsigned dimensions;
+	unsigned table_size;     // The tableSize which comes from dimensions
+	unsigned k;				      // The amount of "h" hash functions
+	H **h; 						      // Array of h values
+
+	F(unsigned k, unsigned dimensions, unsigned table_size);
+	~F();
+
+	int hash(Vector *p);
+};
+
+// CHRIS 01.11.2021 END
 
 #endif
