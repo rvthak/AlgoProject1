@@ -9,7 +9,7 @@
 struct HashTable_Cube{
 	Bucket *bucs;	// Array of Buckets
 	unsigned size;	// The amount of Buckets
-	G *g;			// The Hash function used on this Hash Table
+	F *f;			// The Hash function used on this Hash Table
 
 	HashTable_Cube(int k, unsigned tableSize, unsigned v_size);
 	~HashTable_Cube();

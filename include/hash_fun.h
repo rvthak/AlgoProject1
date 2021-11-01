@@ -39,7 +39,7 @@ struct F {
 	unsigned k;				      // The amount of "h" hash functions
 	H **h; 						      // Array of h values
 
-	F(unsigned k, unsigned dimensions);
+	F(unsigned k, unsigned dimensions, unsigned table_size);
 	~F();
 
 	int hash(Vector *p);

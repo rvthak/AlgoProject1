@@ -84,10 +84,10 @@ int G::ID(Vector *p){
 
 // CHRIS 01.11.2021 START
 
-F::F(unsigned k, unsigned dimensions)
+F::F(unsigned k, unsigned dimensions, unsigned table_size)
 {
 	this->dimensions = dimensions;
-	this->table_size = pow(2, dimensions);
+	this->table_size = table_size;
 
 	// Generate k random "h" functions
 	if((this->h = new H*[k]) == nullptr)
@@ -108,7 +108,7 @@ F::F(unsigned k, unsigned dimensions)
 
 F::~F()
 {
-	for(unsigned i=0; i < (this->k); i++)
+	for(unsigned i = 0; i < (this->k); i++)
 	{
 		delete (this->h)[i];
 	}
@@ -131,6 +131,5 @@ int F::hash(Vector *p)
 
 	return final_hash_key;
 }
-
 
 // CHRIS 01.11.2021 END
