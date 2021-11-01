@@ -93,7 +93,7 @@ F::F(unsigned k, unsigned dimensions)
 		exit(1);
 	}
 
-	for(int i=0; i < k; i++)
+	for(unsigned i = 0; i < k; i++)
 	{
 		if(((this->h)[i] = new H(dimensions)) == nullptr)
 		{
@@ -103,10 +103,16 @@ F::F(unsigned k, unsigned dimensions)
 	}
 }
 
-F::~F(){
-	for(unsigned i=0; i<(this->k); i++){
+F::~F()
+{
+	for(unsigned i=0; i < (this->k); i++)
+	{
 		delete (this->h)[i];
 	}
+}
+
+int F::hash(Vector *p)
+{
 
 }
 
