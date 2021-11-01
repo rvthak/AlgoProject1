@@ -86,7 +86,21 @@ int G::ID(Vector *p){
 
 F::F(unsigned k, unsigned dimensions)
 {
-	
+	// Generate k random "h" functions
+	if((this->h = new H*[k]) == nullptr)
+	{
+		std::cout << "\033[31;1m (!) Fatal Error:\033[0m Memory : Failed to allocate memory for H[]." << std::endl;
+		exit(1);
+	}
+
+	for(int i=0; i < k; i++)
+	{
+		if(((this->h)[i] = new H(dimensions)) == nullptr)
+		{
+			std::cout << "\033[31;1m (!) Fatal Error:\033[0m MultiHash Built : Failed to allocate memory for Hi." << std::endl;
+			exit(1);
+		}
+	}
 }
 
 F::~F(){

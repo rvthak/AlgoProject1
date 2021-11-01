@@ -34,7 +34,7 @@ struct G{
 
 struct F {
 	unsigned dimensions;
-	unsigned tableSize;     // The tableSize which comes from dimensions
+	unsigned table_size;     // The tableSize which comes from dimensions
 	unsigned k;				      // The amount of "h" hash functions
 	H **h; 						      // Array of h values
 
