@@ -32,8 +32,10 @@ int main(int argc, char *argv[]){
 
 		// Testing the cube structure
 		HashTable_Cube cube(args.k, getFileLines(args.input_file)/4, getFileLineLength(args.input_file)-1);
+
 		cube.loadVectors(&input_vecs);
-		
+		// cube.analyze_query_vectors(&query_vecs);
+
 		// Clear the old args
 		args.clear();
 

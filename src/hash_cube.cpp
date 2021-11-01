@@ -39,6 +39,7 @@ HashTable_Cube::~HashTable_Cube(){
 int HashTable_Cube::add(Vector *vec)
 {
 	unsigned key = this->f->hash(vec);
+	// cout << "Hash key : " << key << endl;
 	return (this->bucs)[key].add(vec, 0); // ID == 0 | We don't use ID for Cube
 }
 
@@ -52,11 +53,22 @@ void HashTable_Cube::loadVectors(VectorArray *arr)
 	cout << "Loaded all the vectors at the cube!" << endl;
 }
 
-void project_query_vector(Vector* query_vector)
+void HashTable_Cube::project_query_vector(Vector* query_vector)
 {
 	unsigned projection_key = this->f->hash(query_vector);
 	Bucket projection_bucket = (this->bucs)[projection_key];
 
+	cout << "Projection key : " << projection_key << endl;
+}
+
+void HashTable_Cube::analyze_query_vectors(VectorArray *query_vector_array)
+{
+	for(unsigned i = 0; i < (query_vector_array->size); i++)
+	{
+		this->project_query_vector(&((query_vector_array->array)[i]));
+	}
+
+	cout << "Analyzed all the query vectors at the cube!" << endl;
 }
 
 // Allocate L hash tables, and set their hash functions to use k "h" sub-hash-functions

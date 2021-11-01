@@ -16,7 +16,8 @@ struct HashTable_Cube{
 
 	int add(Vector *vec);
 	void loadVectors(VectorArray *arr);
-	void project_query_vector(Vector* query_vector);
+	void project_query_vector(Vector *query_vector);
+	void analyze_query_vectors(VectorArray *query_vector_array);
 };
 
 // Multiple Hash Tables used for Cube

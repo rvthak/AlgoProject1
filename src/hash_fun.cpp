@@ -22,6 +22,7 @@ H::~H(){}
 // Calculate the hash key of the given Vector
 // Based on math type, slide 19 of "nnCluster.pdf"
 int H::hash(Vector *p){
+	std::cout << "Entered H hash" << std::endl;
 	return floor( (inner_product((p->vec).begin(), (p->vec).end(), (this->v).begin(), 0) + (this->t)) / (this->w) );
 }
 
@@ -121,10 +122,14 @@ int F::hash(Vector *p)
 	int hash_key_from_array, final_hash_key;
 	std::vector<int> bit_array;
 
+	// std::cout << "Bit array : " << std::endl;
+
 	for(unsigned i = 0; i < (this->k); i++)
 	{
 		int h_key = (this->h)[i]->hash(p);
+		std::cout << "h_key : " << h_key << std::endl;
 		int bit = generate_bit_from_h_key(h_key);
+		// std::cout << bit << " ";
 		bit_array.push_back(bit);
 	}
 
