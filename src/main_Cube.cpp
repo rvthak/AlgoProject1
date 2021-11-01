@@ -1,8 +1,8 @@
 #include <iostream>
-#include "Cube.h"
 #include "Args.h"
 #include "utils.h"
 #include "Vector.h"
+#include "hash_cube.h"
 
 int main(int argc, char *argv[]){
 	bool running = true;
@@ -30,8 +30,10 @@ int main(int argc, char *argv[]){
 
 		// query_vecs.print();
 
-
-
+		// Testing the cube structure
+		HashTable_Cube cube(args.k, getFileLines(args.input_file)/4, getFileLineLength(args.input_file)-1);
+		cube.loadVectors(&input_vecs);
+		
 		// Clear the old args
 		args.clear();
 
