@@ -3,6 +3,7 @@
 
 #include "Vector.h"
 
+
 // Hash Function "h"
 struct H{
 	std::vector<int> v;	// Vector based on Normal Distribution
