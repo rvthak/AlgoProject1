@@ -52,6 +52,13 @@ void HashTable_Cube::loadVectors(VectorArray *arr)
 	cout << "Loaded all the vectors at the cube!" << endl;
 }
 
+void project_query_vector(Vector* query_vector)
+{
+	unsigned projection_key = this->f->hash(query_vector);
+	Bucket projection_bucket = (this->bucs)[projection_key];
+
+}
+
 // Allocate L hash tables, and set their hash functions to use k "h" sub-hash-functions
 // MultiHash_Cube::MultiHash_Cube(int k, unsigned tableSize, unsigned v_size){
 //
