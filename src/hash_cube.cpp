@@ -53,6 +53,12 @@ void HashTable_Cube::loadVectors(VectorArray *arr)
 	cout << "Loaded all the vectors at the cube!" << endl;
 }
 
+void HashTable_Cube::set_search_limits(unsigned probes, unsigned M)
+{
+	this->probes = probes;
+	this->M = M;
+}
+
 void HashTable_Cube::project_query_vector(Vector* query_vector)
 {
 	unsigned projection_key = this->f->hash(query_vector);
