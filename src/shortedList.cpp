@@ -6,6 +6,7 @@ SL_Node::SL_Node(Vector *v, double dist){
 	this->v = v;
 	this->dist = dist;
 	this->next = nullptr;
+	this->prev = nullptr;
 }
 
 void SL_Node::print(){
@@ -15,10 +16,11 @@ void SL_Node::print(){
 //------------------------------------------------------------------------------------------------------------------
 
 // Create an empty Shorted List
-ShortedList::ShortedList(unsigned N){
+ShortedList::ShortedList(unsigned max){
 	this->first = nullptr;
 	this->last = nullptr;
-	this->length = 0;
+	this->cur_len = 0;
+	this->max_len = max;
 }
 
 ShortedList::~ShortedList(){
@@ -36,11 +38,26 @@ int ShortedList::add(Vector *v, double dist){
 	if( this->first == nullptr ){
 		this->first = new SL_Node(v, dist);
 		this->last = this->first;
-		(this->length)++;
+		(this->cur_len)++;
 		return 0;
 	}
-	// Else, just add it in the correct location
-	
+
+	// If the list is full => Check if the new Vector should replace any existing one or not
+	else if( this->cur_len == this->max_len ){
+
+		// If the last item is smaller than the new one
+		if( this->last->dist < dist ){
+			// No point in storing the new Vector, it is not a part of the top 'k'
+			return 1;
+		}
+
+		// The new Vector is one of the top 'k' =>
+		// Remove the largest Vector (the last one) to free up space
+		this->delete_last();
+	}
+
+	// Add the New Vector in the correct location
+
 	// Find the correct location
 	SL_Node *cur = this->first, *prev;
 	while( (cur!=nullptr) && (cur->dist < dist) ){
@@ -52,17 +69,32 @@ int ShortedList::add(Vector *v, double dist){
 	if( cur == this->first ){	// New first item
 		this->first = new SL_Node(v, dist);
 		this->first->next = cur;
+		this->first->next->prev = this->first;
 	}
 	else if( cur == nullptr ){	// New last item
 		this->last = new SL_Node(v, dist);
+		this->last->prev = prev;
 		prev->next = this->last;
 	}
 	else{	// New item in between
 		prev->next = new SL_Node(v, dist);
+		prev->next->prev = prev;
 		prev->next->next = cur;
+		cur->prev = prev->next;
 	}
-	(this->length)++;
+	(this->cur_len)++;
+
 	return 0;
+}
+
+// Remove the current last item from the list
+void ShortedList::delete_last(){
+	SL_Node *tmp;
+	tmp = this->last->prev;
+	delete this->last;
+	this->last = tmp;
+	tmp->next = nullptr;
+	(this->cur_len)--;
 }
 
 // Print the shorted list
