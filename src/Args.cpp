@@ -117,6 +117,8 @@ void ARGS_LSH::read_args(){
 		read_arg("output_file");
 		if( cin >> this->output_file ){
 			// We do not check if the output file exists or not
+			// We just clear any existing contents
+			clearContents(this->output_file);
 		}
 		else{ error_arg("output_file"); }
 	}

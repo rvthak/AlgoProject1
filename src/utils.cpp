@@ -80,7 +80,8 @@ unsigned mod(int x, int y){
 
 // Open the given if (if it exists) and clear all of its existing contents
 void clearContents(string filename){
-	fopen(filename.c_str(), "w");
+	FILE *tmp = fopen(filename.c_str(), "w");
+	if( tmp!=nullptr ){ fclose(tmp); }
 }
 
 // Prints the chars of the string independently
