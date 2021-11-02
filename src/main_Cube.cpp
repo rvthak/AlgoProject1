@@ -38,7 +38,7 @@ int main(int argc, char *argv[]){
 		std::cout << "Setted search limits" << std::endl;
 
 		cube.loadVectors(&input_vecs);
-		cube.k_nearest_neighbors_search(&input_vecs.array[0], "");
+		ShortedList* shorted_list = cube.k_nearest_neighbors_search(&input_vecs.array[0], "");
 
 		// cube.analyze_query_vectors(&query_vecs);
 

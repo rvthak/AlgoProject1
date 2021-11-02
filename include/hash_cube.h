@@ -5,6 +5,9 @@
 #include "Vector.h"
 #include "hash_fun.h"
 #include "shortedList.h"
+#include <vector>
+
+using namespace std;
 
 // Sinple Hash Table Struct that uses randomized Hash Functions
 struct HashTable_Cube{
@@ -16,6 +19,7 @@ struct HashTable_Cube{
 	unsigned k;                // k nearest-neighbors to check
 	unsigned probes_searched;
 	unsigned vectors_searched;
+	vector<int> visited_bucket_keys;
 	F *f;			                 // The Hash function used on this Hash Table
 
 	HashTable_Cube(int k, unsigned tableSize, unsigned v_size);
@@ -27,6 +31,7 @@ struct HashTable_Cube{
 	int project_query_vector(Vector *query_vector);
 	void analyze_query_vectors(VectorArray *query_vector_array);
 	void iterate_bucket(Bucket* bucket, Vector* query_vector);
+	int get_next_bucket_key(int last_bucket_key);
 	ShortedList* k_nearest_neighbors_search(Vector *query, std::string output);
 	void range_search(Vector *query, double R, std::string output);
 };
