@@ -110,11 +110,14 @@ void HashTable_Cube::k_nearest_neighbors_search(Vector *query, std::string outpu
 
 		while (current_bucket_node != nullptr)
 		{
-			if (current_bucket_node->data->id == v->id)
-			{ return true; }
+			// Get each vector of the bucket & the L2 distance to the query vector
+			Vector* vector = current_bucket_node->data;
+			double distance = query->l2(vector);
+			this->shorted_list->add(vector, distance);
 			current_bucket_node = current_bucket_node->next;
+			vectors_searched++;
 		}
-		
+
 		break;
 	}
 }
