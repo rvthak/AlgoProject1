@@ -27,7 +27,7 @@ struct HashTable_Cube{
 	int project_query_vector(Vector *query_vector);
 	void analyze_query_vectors(VectorArray *query_vector_array);
 	void iterate_bucket(Bucket* bucket, Vector* query_vector);
-	void k_nearest_neighbors_search(Vector *query, std::string output);
+	ShortedList* k_nearest_neighbors_search(Vector *query, std::string output);
 	void range_search(Vector *query, double R, std::string output);
 };
 

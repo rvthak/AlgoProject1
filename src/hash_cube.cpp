@@ -108,7 +108,7 @@ void HashTable_Cube::iterate_bucket(Bucket* bucket, Vector* query_vector)
 	}
 }
 
-void HashTable_Cube::k_nearest_neighbors_search(Vector *query, std::string output)
+ShortedList* HashTable_Cube::k_nearest_neighbors_search(Vector *query, std::string output)
 {
 	this->probes_searched = 0;
 	this->vectors_searched = 0;
@@ -128,6 +128,8 @@ void HashTable_Cube::k_nearest_neighbors_search(Vector *query, std::string outpu
 	}
 
 	cout << "Completed nearest neighbors search!" << endl;
+
+	return this->shorted_list;
 }
 
 void HashTable_Cube::range_search(Vector *query, double R, std::string output)
