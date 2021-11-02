@@ -80,11 +80,17 @@ void MultiHash::loadVectors(VectorArray *arr){
 }
 
 // LSH search for the k approximate Nearest Neighbors of the given query Vector
-void MultiHash::kNN_lsh(Vector *query, std::string output){
+ShortedList *MultiHash::kNN_lsh(Vector *query, unsigned k){
+	ShortedList *list = new ShortedList(k);
 
+	return list;
 }
 
 // Range search for the k approximate Nearest Neighbors of the given query Vector
-void MultiHash::range_search(Vector *query, double R, std::string output){
+List *MultiHash::range_search(Vector *query, double R){
+	List *list = new List();
 
+
+	return list;
 }
+

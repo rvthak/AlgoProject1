@@ -2,9 +2,11 @@
 #define HASH_LSH
 
 #include <string>
+#include "List.h"
 #include "Vector.h"
 #include "bucket.h"
 #include "hash_fun.h"
+#include "shortedList.h"
 
 // Sinple Hash Table Struct that uses randomized Hash Functions
 struct HashTable{
@@ -29,8 +31,8 @@ struct MultiHash{
 	void add(Vector *vec);
 	void loadVectors(VectorArray *arr);
 
-	void kNN_lsh(Vector *query, std::string output);
-	void range_search(Vector *query, double R, std::string output);
+	ShortedList *kNN_lsh(Vector *query, unsigned k);
+	List *range_search(Vector *query, double R);
 };
 
 #endif

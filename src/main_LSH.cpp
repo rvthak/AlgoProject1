@@ -99,7 +99,7 @@ void report_results(std::string filename, unsigned id, unsigned k,
 	SL_Node *lsh_p = lsh->first, *naive_p = naive->first;
 	for(unsigned i=0; i<k; i++){
 
-		if( lsh_p = nullptr ){ break; }
+		if( lsh_p == nullptr ){ break; }
 
 		file << "Nearest neighbor-" << i+1 << ": " << lsh_p->v->id << std::endl;
 		file << "distanceLSH: "  << lsh_p->dist   << std::endl;
