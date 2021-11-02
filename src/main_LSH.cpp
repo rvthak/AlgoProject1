@@ -1,8 +1,18 @@
+#include <fstream>
 #include <iostream>
 #include "Args.h"
+#include "List.h"
 #include "utils.h"
+#include "timer.h"
 #include "Vector.h"
 #include "hash_lsh.h"
+#include "shortedList.h"
+
+
+void report_results(std::string filename, unsigned id, unsigned k, 
+	                ShortedList *lsh,   double lsh_t, 
+	                ShortedList *naive, double naive_t, 
+	                List *range);
 
 
 int main(int argc, char *argv[]){
@@ -16,6 +26,14 @@ int main(int argc, char *argv[]){
 	args.read_terminal(argc, argv);
 	args.load_defaults();
 	args.print();
+
+	// Create a Timer to time the tests
+	Timer timer;
+	double lsh_time, naive_time;
+
+	// Pointers to the test results
+	ShortedList *lsh_results, *naive_results;
+	List *r_results;
 
 	// Enter the main program loop
 	while(running){
@@ -33,6 +51,22 @@ int main(int argc, char *argv[]){
 		// Load the input data into the structs
 		lsh.loadVectors(&input_vecs);
 
+		// For each query Vector:
+		for(unsigned i=0; i<(query_vecs.size); i++){
+
+			Vector *q = &((query_vecs.array)[i]);
+
+			// Run and time the tests
+			timer.tic();  lsh_results   = lsh.kNN_lsh( q , args.k );                            lsh_time   = timer.toc();
+			timer.tic();  naive_results = (ShortedList *)(input_vecs.kNN_naive( q , args.k ));  naive_time = timer.toc();
+			r_results = lsh.range_search( q , args.R );
+
+			// Write a report on the output file
+			report_results(args.output_file, q->id, args.k, lsh_results, lsh_time, naive_results, naive_time, r_results);
+		
+			// Results written in output file => Free the memory
+			delete lsh_results; delete r_results; delete naive_results;
+		}
 
 		// Clear the old args
 		args.clear();
@@ -47,3 +81,44 @@ int main(int argc, char *argv[]){
 
 //------------------------------------------------------------------------------------------------------------------
 
+// Function used to Report the test results 
+void report_results(std::string filename, unsigned id, unsigned k, 
+	                ShortedList *lsh, double lsh_t, 
+	                ShortedList *naive, double naive_t, 
+	                List *range){
+
+ 	std::ofstream file;
+
+ 	// Open the output file in append mode 
+	file.open(filename, std::ios_base::app);
+
+	// Write the query id
+	file << "Query: " << id << std::endl;
+
+	// Write the results for each "i-th" Neighbor found (Comparing LSH and Naive-True)
+	SL_Node *lsh_p = lsh->first, *naive_p = naive->first;
+	for(unsigned i=0; i<k; i++){
+
+		if( lsh_p = nullptr ){ break; }
+
+		file << "Nearest neighbor-" << i+1 << ": " << lsh_p->v->id << std::endl;
+		file << "distanceLSH: "  << lsh_p->dist   << std::endl;
+		file << "distanceTrue: " << naive_p->dist << std::endl;
+
+		lsh_p   = lsh_p->next;
+		naive_p = naive_p->next;
+	}
+
+	// Write the test times
+	file << "tLSH: "  << lsh_t   << std::endl;
+	file << "tTrue: " << naive_t << std::endl;
+
+	// Write the Range search results 
+	file << "R-near neighbors:" << std::endl;
+	List_node *cur = range->first;
+	for(unsigned i=0; i<(range->size); i++){
+		file << cur->data->id << std::endl;
+		cur = cur->next;
+	}
+  	file << std::endl;
+}
