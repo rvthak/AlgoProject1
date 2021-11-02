@@ -1,10 +1,10 @@
 #include "utils.h"
+#include <vector>
 #include <cstdio>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <algorithm>
-#include <vector>
 #include <bits/stdc++.h>
 
 using namespace std;

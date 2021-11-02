@@ -1,5 +1,6 @@
-#include "Vector.h"
 #include "utils.h"
+#include "Vector.h"
+#include "shortedList.h"
 #include <cmath>
 #include <fstream>
 #include <sstream>
@@ -120,6 +121,16 @@ void VectorArray::parse_input(string filename){
 }
 
 // Naive search for the k Nearest Neighbors of the given query Vector
-void VectorArray::kNN_naive(Vector *query, unsigned k, std::string output){
+void *VectorArray::kNN_naive(Vector *query, unsigned k){
 
-}
+	// The naive approach to solving the k Nearest Neighbors problem is 
+	// to just check all the distances and keep the shortest ones
+
+	// We just add all the existing Vectors and their distances into a Shorted List
+	// and in the end we have the k nearest Vectors stored in the list
+	ShortedList *list = new ShortedList(k);
+	for(unsigned i=0; i<(this->size); i++){
+		list->add( &((this->array)[i]), query->l2( &((this->array)[i]) ) );
+	}
+	return list;
+} // (!) Remember to free the returned list afterwards

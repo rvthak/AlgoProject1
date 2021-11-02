@@ -23,7 +23,7 @@ int normal_distribution(int mean, int variance){
 // Return a vector that has normally distributed coordinates
 std::vector<int> normal_vector(int mean, int variance, unsigned v_size){
 	std::vector<int> v;
-	for(int i=0; i<v_size; i++){
+	for(unsigned i=0; i<v_size; i++){
 		v.push_back( normal_distribution(mean, variance));
 	}
 	return v;

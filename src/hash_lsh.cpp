@@ -1,6 +1,6 @@
-#include "hash_lsh.h"
 #include "timer.h"
 #include "utils.h"
+#include "hash_lsh.h"
 #include <iostream>
 
 
