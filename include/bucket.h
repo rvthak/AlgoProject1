@@ -17,7 +17,7 @@ struct Bucket_node{
 struct Bucket{
 	Bucket_node *first;	// Pointer to the first bucket item
 	unsigned size;		// The amount of items stored in the bucket
-	
+
 	Bucket();
 	~Bucket();
 
