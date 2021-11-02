@@ -4,6 +4,7 @@
 #include "Vector.h"
 #include "bucket.h"
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -92,34 +93,41 @@ void HashTable_Cube::analyze_query_vectors(VectorArray *query_vector_array)
 	cout << "Analyzed all the query vectors at the cube!" << endl;
 }
 
+void HashTable_Cube::iterate_bucket(Bucket* bucket, Vector* query_vector)
+{
+	Bucket_node *current_bucket_node = bucket->first;
+
+	while (current_bucket_node != nullptr)
+	{
+		// Get each vector of the bucket & the L2 distance to the query vector
+		Vector* vector = current_bucket_node->data;
+		double distance = query_vector->l2(vector);
+		this->shorted_list->add(vector, distance);
+		current_bucket_node = current_bucket_node->next;
+		this->vectors_searched++;
+	}
+}
+
 void HashTable_Cube::k_nearest_neighbors_search(Vector *query, std::string output)
 {
-	int probes_searched = 0;
-	int vectors_searched = 0;
+	this->probes_searched = 0;
+	this->vectors_searched = 0;
 
-	int max_probes = this->probes;
-	int max_vectors = this->M;
-	int k = this->k;
+	unsigned max_probes = this->probes;
+	unsigned max_vectors = this->M;
+	unsigned k = this->k;
 
-	while ((probes_searched <= max_probes) && (vectors_searched <= max_vectors))
+	while ((this->probes_searched <= max_probes) && (this->vectors_searched <= max_vectors))
 	{
 		int projection_key = this->project_query_vector(query);
 		Bucket* projection_bucket = &(this->bucs)[projection_key];
 
-		Bucket_node *current_bucket_node = projection_bucket->first;
+		this->iterate_bucket(projection_bucket, query);
 
-		while (current_bucket_node != nullptr)
-		{
-			// Get each vector of the bucket & the L2 distance to the query vector
-			Vector* vector = current_bucket_node->data;
-			double distance = query->l2(vector);
-			this->shorted_list->add(vector, distance);
-			current_bucket_node = current_bucket_node->next;
-			vectors_searched++;
-		}
-
-		break;
+		// break;
 	}
+
+	cout << "Completed nearest neighbors search!" << endl;
 }
 
 void HashTable_Cube::range_search(Vector *query, double R, std::string output)
