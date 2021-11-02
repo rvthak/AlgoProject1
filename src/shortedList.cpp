@@ -61,7 +61,7 @@ int ShortedList::add(Vector *v, double dist){
 	}
 	else{ // The list is not full
 		// If the Vector is already in the List, dont add it again
-		if( this->exists(v) ){ return 1; } 
+		if( this->exists(v, dist) ){ return 1; } 
 	}
 
 	// Add the New Vector in the correct location

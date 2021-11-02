@@ -81,15 +81,65 @@ void MultiHash::loadVectors(VectorArray *arr){
 
 // LSH search for the k approximate Nearest Neighbors of the given query Vector
 ShortedList *MultiHash::kNN_lsh(Vector *query, unsigned k){
+	int key;
+	unsigned ID;
+	Bucket *bucket;
 	ShortedList *list = new ShortedList(k);
 
+	// For each existing Hash Table
+	for(unsigned i=0; i<(this->amount); i++){
+
+		// Calculate the ID of the query vector
+		ID = ((this->array)[i])->g->ID(query);
+
+		// Find the correct bucket based on the hash key
+		key    = mod( ID , ((this->array)[i])->g->tableSize );
+		bucket = &((((this->array)[i])->bucs)[key]);
+
+		// Check the bucket and store only the nearest Vectors
+		Bucket_node *cur = bucket->first;
+		while( cur != nullptr ){
+
+			// Only check Vectors with the same ID to avoid computing unnecessary distances
+			if( cur->ID == ID ){
+				list->add( cur->data, query->l2(cur->data));
+			}
+
+			cur = cur->next;
+		}
+	}
 	return list;
 }
 
 // Range search for the k approximate Nearest Neighbors of the given query Vector
 List *MultiHash::range_search(Vector *query, double R){
+	int key;
+	unsigned ID;
+	double dist;
+	Bucket *bucket;
 	List *list = new List();
 
+	// For each existing Hash Table
+	for(unsigned i=0; i<(this->amount); i++){
+
+		// Calculate the ID of the query vector
+		ID = ((this->array)[i])->g->ID(query);
+
+		// Find the correct bucket based on the hash key
+		key    = mod( ID , ((this->array)[i])->g->tableSize );
+		bucket = &((((this->array)[i])->bucs)[key]);
+
+		// Check the bucket and store only the nearest Vectors
+		Bucket_node *cur = bucket->first;
+		while( cur != nullptr ){
+
+			if( (dist = query->l2(cur->data)) <= R ){
+				list->add( cur->data);
+			}
+
+			cur = cur->next;
+		}
+	}
 
 	return list;
 }

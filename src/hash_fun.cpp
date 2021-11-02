@@ -63,16 +63,12 @@ G::~G(){
 }
 
 // Calculate the hash key of the given Vector (Sum-Based)
-// Based on the math type on slide 21 of "nnCluster.pdf"
 int G::hash(Vector *p){
-	int sum=0;
-	for(unsigned i=0; i<(this->k); i++){
-		sum += mod( (this->r)[i] * (this->h)[i]->hash(p) , this->M );
-	}
-	return mod( mod(sum, this->M) , this->tableSize );
+	return mod( this->ID(p) , this->tableSize ); 
 }
 
 // Calculate the ID of the given Vector (Sum-Based)
+// Based on the math type on slide 21 of "nnCluster.pdf"
 int G::ID(Vector *p){
 	int sum=0;
 	for(unsigned i=0; i<(this->k); i++){
