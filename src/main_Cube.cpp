@@ -33,11 +33,13 @@ int main(int argc, char *argv[]){
 		// Testing the cube structure
 		HashTable_Cube cube(args.k, getFileLines(args.input_file)/4, getFileLineLength(args.input_file)-1);
 
-		cube.set_search_limits(args.probes, args.M);
+		cube.set_search_limits(args.probes, args.M, args.k);
 
 		std::cout << "Setted search limits" << std::endl;
 
 		cube.loadVectors(&input_vecs);
+		cube.k_nearest_neighbors_search(&input_vecs.array[0], "");
+
 		// cube.analyze_query_vectors(&query_vecs);
 
 		// Clear the old args

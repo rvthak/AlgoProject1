@@ -1,5 +1,7 @@
 #include "hash_cube.h"
 #include "shortedList.h"
+#include "utils.h"
+#include "Vector.h"
 #include <iostream>
 
 using namespace std;
@@ -62,10 +64,11 @@ void HashTable_Cube::loadVectors(VectorArray *arr)
 	cout << "Loaded all the vectors at the cube!" << endl;
 }
 
-void HashTable_Cube::set_search_limits(unsigned probes, unsigned M)
+void HashTable_Cube::set_search_limits(unsigned probes, unsigned M, unsigned k)
 {
 	this->probes = probes;
 	this->M = M;
+	this->k = k;
 }
 
 void HashTable_Cube::project_query_vector(Vector* query_vector)
@@ -84,6 +87,18 @@ void HashTable_Cube::analyze_query_vectors(VectorArray *query_vector_array)
 	}
 
 	cout << "Analyzed all the query vectors at the cube!" << endl;
+}
+
+void HashTable_Cube::k_nearest_neighbors_search(Vector *query, std::string output)
+{
+	int max_probes = this->probes;
+	int max_vectors = this->M;
+	int k = this->k;
+}
+
+void HashTable_Cube::range_search(Vector *query, double R, std::string output)
+{
+
 }
 
 // Allocate L hash tables, and set their hash functions to use k "h" sub-hash-functions

@@ -13,6 +13,7 @@ struct HashTable_Cube{
 	unsigned size;	           // The amount of Buckets
 	unsigned probes;           // Max amount of buckets to check
 	unsigned M;                // Max amount of vectors to check
+	unsigned k;                // k nearest-neighbors to check
 	F *f;			                 // The Hash function used on this Hash Table
 
 	HashTable_Cube(int k, unsigned tableSize, unsigned v_size);
@@ -20,9 +21,11 @@ struct HashTable_Cube{
 
 	int add(Vector *vec);
 	void loadVectors(VectorArray *arr);
-	void set_search_limits(unsigned probes, unsigned M);
+	void set_search_limits(unsigned probes, unsigned M, unsigned k);
 	void project_query_vector(Vector *query_vector);
 	void analyze_query_vectors(VectorArray *query_vector_array);
+	void k_nearest_neighbors_search(Vector *query, std::string output);
+	void range_search(Vector *query, double R, std::string output);
 };
 
 // Multiple Hash Tables used for Cube
