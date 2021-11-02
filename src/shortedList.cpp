@@ -32,6 +32,7 @@ ShortedList::~ShortedList(){
 }
 
 // Insert the given Vector in the correct location in the list based on its given distance
+// Ensure that each Vector exists only once in the list
 int ShortedList::add(Vector *v, double dist){
 	
 	// If the list is empty just add it
@@ -43,7 +44,7 @@ int ShortedList::add(Vector *v, double dist){
 	}
 
 	// If the list is full => Check if the new Vector should replace any existing one or not
-	else if( this->cur_len == this->max_len ){
+	if( this->cur_len == this->max_len ){
 
 		// If the last item is smaller than the new one
 		if( this->last->dist < dist ){
@@ -51,9 +52,16 @@ int ShortedList::add(Vector *v, double dist){
 			return 1;
 		}
 
+		// If the Vector is already in the List, dont add it again
+		if( this->exists(v) ){ return 1; } 
+
 		// The new Vector is one of the top 'k' =>
 		// Remove the largest Vector (the last one) to free up space
 		this->delete_last();
+	}
+	else{ // The list is not full
+		// If the Vector is already in the List, dont add it again
+		if( this->exists(v) ){ return 1; } 
 	}
 
 	// Add the New Vector in the correct location
@@ -85,6 +93,22 @@ int ShortedList::add(Vector *v, double dist){
 	(this->cur_len)++;
 
 	return 0;
+}
+
+// Check if the given Vector exists in the Shorted list
+// Take advantage of the fact that the list is shorted to end the search early
+bool ShortedList::exists(Vector *v){
+	// Start from the first node and check every node
+	SL_Node *cur = this->first;
+	while( (tmp=cur) != nullptr ){
+
+		// If we passed the ids distance => it does not exist for sure
+		if( cur->dist > v->dist ){ return false; }
+		
+		if( cur->v->id == v->id){ return true; }
+		cur = cur->next;
+	}
+	return false;
 }
 
 // Remove the current last item from the list

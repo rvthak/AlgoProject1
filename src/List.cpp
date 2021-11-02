@@ -27,7 +27,12 @@ List::~List(){
 }
 
 // Store the Vector Pointer in the List ( Insert at Start : O(1) )
+// Ensure that each Vector exists only once in the list
 int List::add(Vector *v){
+
+	// If the Vector is already in the List, dont add it again
+	if( this->exists(v) ){ return 1; } 
+
 	List_node *tmp = this->first;
 	this->first = new List_node(v);
 	if( (this->first) == nullptr ){ return 1; }
@@ -36,7 +41,7 @@ int List::add(Vector *v){
 }
 
 // Search for the given Vector in the List's Linked List
-bool List::search(Vector *v){
+bool List::exists(Vector *v){
 	List_node *cur = this->first;
 	while( cur != nullptr ){
 		if( cur->data->id == v->id ){ return true; }

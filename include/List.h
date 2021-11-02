@@ -21,7 +21,7 @@ struct List{
 	~List();
 
 	int add(Vector *v);
-	bool search(Vector *v);
+	bool exists(Vector *v);
 	void print();
 };
 

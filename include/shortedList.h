@@ -26,6 +26,7 @@ struct ShortedList{
 
 	// Add the given Vector in the correct location while not storing more than "max_len" Vectors
 	int add(Vector *v, double dist);
+	bool exists(Vector *v);
 	void print();
 
 private:
