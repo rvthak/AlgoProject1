@@ -1,4 +1,5 @@
 #include "hash_cube.h"
+#include "shortedList.h"
 #include <iostream>
 
 using namespace std;
@@ -8,10 +9,18 @@ HashTable_Cube::HashTable_Cube(int k, unsigned tableSize, unsigned v_size){
 
 	// Allocate the Bucket Array
 	this->bucs = new Bucket[tableSize];
+	cout << "Going to create shorted list" << endl;
+	this->shorted_list = new ShortedList(0);  // TODO : ASK GIANNIS ABOUT UNSIGNED N
 
 	if(this->bucs == nullptr)
 	{
 		cout << "\033[31;1m (!) Fatal Error:\033[0m Memory : Failed to allocate memory for Bucket." << endl;
+		exit(1);
+	}
+
+	if(this->shorted_list == nullptr)
+	{
+		cout << "\033[31;1m (!) Fatal Error:\033[0m Memory : Failed to allocate memory for Shorted List." << endl;
 		exit(1);
 	}
 

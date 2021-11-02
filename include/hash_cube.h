@@ -4,14 +4,16 @@
 #include "bucket.h"
 #include "Vector.h"
 #include "hash_fun.h"
+#include "shortedList.h"
 
 // Sinple Hash Table Struct that uses randomized Hash Functions
 struct HashTable_Cube{
-	Bucket *bucs;	       // Array of Buckets
-	unsigned size;	     // The amount of Buckets
-	unsigned probes;     // Max amount of buckets to check
-	unsigned M;          // Max amount of vectors to check
-	F *f;			           // The Hash function used on this Hash Table
+	Bucket *bucs;	             // Array of Buckets
+	ShortedList *shorted_list; // The sorted list that will help with the search
+	unsigned size;	           // The amount of Buckets
+	unsigned probes;           // Max amount of buckets to check
+	unsigned M;                // Max amount of vectors to check
+	F *f;			                 // The Hash function used on this Hash Table
 
 	HashTable_Cube(int k, unsigned tableSize, unsigned v_size);
 	~HashTable_Cube();
