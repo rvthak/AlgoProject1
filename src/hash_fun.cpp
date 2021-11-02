@@ -7,7 +7,7 @@
 #include <iostream>
 #include <functional>
 
-#define M_VALUE ((2^32)-5)
+#define M_VALUE 4294967291UL
 #define W_VALUE  3 // in [2,6]
 #define MAX_32_INT 2147483647
 

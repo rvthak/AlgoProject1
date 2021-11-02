@@ -17,7 +17,7 @@ struct H{
 
 // Hash Function "g" (Randomized on initialization) - Calculated based on sub-hash-functions "h"
 struct G{
-	unsigned M;				// Large Prime Number
+	unsigned long M;		// Large Prime Number
 	unsigned tableSize;		// The size of the TargetHash table (heuristic choice)
 	unsigned k;				// The amount of "h" hash functions
 

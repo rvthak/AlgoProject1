@@ -72,9 +72,8 @@ bool question(string q){
 }
 
 // Modulo : Always positive
-unsigned mod(int x, int y){
+unsigned long mod(long x, unsigned long y){
 	if( x<0 ){ x*=(-1); }
-	if( y<0 ){ y*=(-1); }
 	return x%y;
 }
 
