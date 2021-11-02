@@ -2,6 +2,7 @@
 #include "shortedList.h"
 #include "utils.h"
 #include "Vector.h"
+#include "bucket.h"
 #include <iostream>
 
 using namespace std;
@@ -71,12 +72,14 @@ void HashTable_Cube::set_search_limits(unsigned probes, unsigned M, unsigned k)
 	this->k = k;
 }
 
-void HashTable_Cube::project_query_vector(Vector* query_vector)
+int HashTable_Cube::project_query_vector(Vector* query_vector)
 {
 	unsigned projection_key = this->f->hash(query_vector);
-	Bucket projection_bucket = (this->bucs)[projection_key];
+	// Bucket projection_bucket = (this->bucs)[projection_key];
 
 	cout << "Projection key : " << projection_key << endl;
+
+	return projection_key;
 }
 
 void HashTable_Cube::analyze_query_vectors(VectorArray *query_vector_array)
@@ -91,9 +94,29 @@ void HashTable_Cube::analyze_query_vectors(VectorArray *query_vector_array)
 
 void HashTable_Cube::k_nearest_neighbors_search(Vector *query, std::string output)
 {
+	int probes_searched = 0;
+	int vectors_searched = 0;
+
 	int max_probes = this->probes;
 	int max_vectors = this->M;
 	int k = this->k;
+
+	while ((probes_searched <= max_probes) && (vectors_searched <= max_vectors))
+	{
+		int projection_key = this->project_query_vector(query);
+		Bucket* projection_bucket = &(this->bucs)[projection_key];
+
+		Bucket_node *current_bucket_node = projection_bucket->first;
+
+		while (current_bucket_node != nullptr)
+		{
+			if (current_bucket_node->data->id == v->id)
+			{ return true; }
+			current_bucket_node = current_bucket_node->next;
+		}
+		
+		break;
+	}
 }
 
 void HashTable_Cube::range_search(Vector *query, double R, std::string output)
