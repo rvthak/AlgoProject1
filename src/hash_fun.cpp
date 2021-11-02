@@ -22,7 +22,6 @@ H::~H(){}
 // Calculate the hash key of the given Vector
 // Based on math type, slide 19 of "nnCluster.pdf"
 int H::hash(Vector *p){
-	std::cout << "Entered H hash" << std::endl;
 	return floor( (inner_product((p->vec).begin(), (p->vec).end(), (this->v).begin(), 0) + (this->t)) / (this->w) );
 }
 
