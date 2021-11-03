@@ -33,6 +33,7 @@ int Bucket::add(Vector *v, unsigned ID){
 	this->first = new Bucket_node(v, ID);
 	if( (this->first) == nullptr ){ return 1; }
 	this->first->next = tmp;
+	(this->size)++;
 	return 0;
 }
 
