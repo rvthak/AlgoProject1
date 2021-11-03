@@ -18,6 +18,9 @@ struct HashTable{
 	~HashTable();
 
 	int add(Vector *vec);
+
+	void preview();
+	double averageBucketSize();
 };
 
 // Multiple Hash Tables used for LSH
@@ -30,6 +33,9 @@ struct MultiHash{
 
 	void add(Vector *vec);
 	void loadVectors(VectorArray *arr);
+
+	void print();
+	double averageBucketSize();
 
 	ShortedList *kNN_lsh(Vector *query, unsigned k);
 	List *range_search(Vector *query, double R);

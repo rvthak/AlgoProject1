@@ -36,6 +36,22 @@ int HashTable::add(Vector *vec){
 	return (this->bucs)[key].add(vec, id);
 }
 
+// Print only the buckets + the amount of Vectors stored on each one
+void HashTable::preview(){
+	for(unsigned i=0; i<(this->size); i++){
+		std::cout << " Bucket: " << i+1 << ", Vectors Stored: " << (this->bucs)[i].size << std::endl;
+	}
+}
+
+// Return the Average amount of Vectors per Bucket in the Hash Table
+double HashTable::averageBucketSize(){
+	double sum=0;
+	for(unsigned i=0; i<(this->size); i++){
+		sum += (this->bucs)[i].size;
+	}
+	return sum/(this->size);
+}
+
 //------------------------------------------------------------------------------------------------------------------
 
 // Allocate L hash tables, and set their hash functions to use k "h" sub-hash-functions
@@ -100,10 +116,13 @@ ShortedList *MultiHash::kNN_lsh(Vector *query, unsigned k){
 		Bucket_node *cur = bucket->first;
 		while( cur != nullptr ){
 
+			//std::cout << " checking id" << std::endl;
+
 			// Only check Vectors with the same ID to avoid computing unnecessary distances
-			if( cur->ID == ID ){
+			//if( cur->ID == ID )
+				//std::cout << " Adding" << std::endl;
 				list->add( cur->data, query->l2(cur->data));
-			}
+			
 
 			cur = cur->next;
 		}
@@ -144,3 +163,19 @@ List *MultiHash::range_search(Vector *query, double R){
 	return list;
 }
 
+// Print the Multihash struct
+void MultiHash::print(){
+	for(unsigned i=0; i<(this->amount); i++){
+		(this->array)[i]->preview();
+		std::cout << std::endl; 
+	}
+}
+
+// Return the Average amount of Vectors per Bucket between all the Hash Tables
+double MultiHash::averageBucketSize(){
+	double sum=0;
+	for(unsigned i=0; i<(this->amount); i++){
+		sum += (this->array)[i]->averageBucketSize();
+	}
+	return sum/(this->amount);
+}
