@@ -10,7 +10,7 @@
 using namespace std;
 
 // Create a Hash table with a randomized "g" hash function
-HashTable_Cube::HashTable_Cube(int k, unsigned tableSize, unsigned v_size){
+Hypercube::Hypercube(unsigned k, unsigned tableSize, unsigned v_size){
 
 	// Allocate the Bucket Array
 	this->size = tableSize;
@@ -43,21 +43,21 @@ HashTable_Cube::HashTable_Cube(int k, unsigned tableSize, unsigned v_size){
 	cout << "Created hash table for cube!" << endl;
 }
 
-HashTable_Cube::~HashTable_Cube(){
+Hypercube::~Hypercube(){
 	delete [] this->bucs;
 	delete this->f;
 }
 
 
 // Add the given Vector to "this" Hash Table
-int HashTable_Cube::add(Vector *vec)
+int Hypercube::add(Vector *vec)
 {
 	unsigned key = this->f->hash(vec);
 	// cout << "Hash key : " << key << endl;
 	return (this->bucs)[key].add(vec, 0); // ID == 0 | We don't use ID for Cube
 }
 
-void HashTable_Cube::loadVectors(VectorArray *arr)
+void Hypercube::loadVectors(VectorArray *arr)
 {
 	for(unsigned i = 0; i < (arr->size); i++)
 	{
@@ -67,14 +67,14 @@ void HashTable_Cube::loadVectors(VectorArray *arr)
 	cout << "Loaded all the vectors at the cube!" << endl;
 }
 
-void HashTable_Cube::set_search_limits(unsigned probes, unsigned M, unsigned k)
+void Hypercube::set_search_limits(unsigned probes, unsigned M, unsigned k)
 {
 	this->probes = probes;
 	this->M = M;
 	this->k = k;
 }
 
-int HashTable_Cube::project_query_vector(Vector* query_vector)
+int Hypercube::project_query_vector(Vector* query_vector)
 {
 	unsigned projection_key = this->f->hash(query_vector);
 	// Bucket projection_bucket = (this->bucs)[projection_key];
@@ -84,7 +84,7 @@ int HashTable_Cube::project_query_vector(Vector* query_vector)
 	return projection_key;
 }
 
-void HashTable_Cube::analyze_query_vectors(VectorArray *query_vector_array)
+void Hypercube::analyze_query_vectors(VectorArray *query_vector_array)
 {
 	for(unsigned i = 0; i < (query_vector_array->size); i++)
 	{
@@ -94,7 +94,7 @@ void HashTable_Cube::analyze_query_vectors(VectorArray *query_vector_array)
 	cout << "Analyzed all the query vectors at the cube!" << endl;
 }
 
-int HashTable_Cube::get_next_bucket_key(int last_bucket_key)
+int Hypercube::get_next_bucket_key(int last_bucket_key)
 {
 	vector<int> hamming_distance_limits { 5, 4, 3, 2, 1 };  // TODO : CHECK IF THIS IS CORRECT ORDER
 
@@ -123,7 +123,7 @@ int HashTable_Cube::get_next_bucket_key(int last_bucket_key)
 	return 0;
 }
 
-void HashTable_Cube::iterate_bucket(Bucket* bucket, Vector* query_vector)
+void Hypercube::iterate_bucket(Bucket* bucket, Vector* query_vector)
 {
 	Bucket_node *current_bucket_node = bucket->first;
 
@@ -138,7 +138,7 @@ void HashTable_Cube::iterate_bucket(Bucket* bucket, Vector* query_vector)
 	}
 }
 
-ShortedList* HashTable_Cube::k_nearest_neighbors_search(Vector *query, std::string output)
+ShortedList* Hypercube::search_hypercube(Vector *query)
 {
 	this->probes_searched = 0;
 	this->vectors_searched = 0;
@@ -172,51 +172,38 @@ ShortedList* HashTable_Cube::k_nearest_neighbors_search(Vector *query, std::stri
 	return this->shorted_list;
 }
 
-void HashTable_Cube::range_search(Vector *query, double R, std::string output)
+ShortedList* Hypercube::k_nearest_neighbors_search(unsigned k)
 {
+	unsigned counter = 0;
+	ShortedList* final_list = new ShortedList(0);
+	SL_Node* current_list_node = this->shorted_list->first;
 
+	while ((current_list_node != nullptr) && (counter <= k))
+	{
+		Vector* vector = current_list_node->v;
+		double distance = current_list_node->dist;
+		final_list->add(vector, distance);
+		current_list_node = current_list_node->next;
+	}
+
+	return final_list;
 }
 
-// Allocate L hash tables, and set their hash functions to use k "h" sub-hash-functions
-// MultiHash_Cube::MultiHash_Cube(int k, unsigned tableSize, unsigned v_size){
-//
-// 	// Allocate the Hash tables
-// 	if((this->array = new HashTable_Cube*[tableSize]) == nullptr)
-// 	{
-// 		std::cout << "\033[31;1m (!) Fatal Error:\033[0m MultiHash Built : Failed to allocate memory." << std::endl;
-// 		exit(1);
-// 	}
-// 	for(int i=0; i<L; i++)
-// 	{
-// 		if(((this->array)[i] = new HashTable_Cube(k, tableSize, v_size)) == nullptr)
-// 		{
-// 			std::cout << "\033[31;1m (!) Fatal Error:\033[0m MultiHash Built : Failed to allocate memory." << std::endl;
-// 			exit(1);
-// 		}
-// 	}
-//
-// 	this->amount = L;
-// }
-//
-// MultiHash_Cube::~MultiHash_Cube()
-// {
-// 	for(unsigned i = 0; i < (this->amount); i++)
-// 	{
-// 		delete (this->array)[i];
-// 	}
-//
-// 	delete [] (this->array);
-// }
-//
-// // Add the given Vector on every Hash Table
-// void MultiHash_Cube::add(Vector *vec)
-// {
-// 	for(unsigned i = 0; i < this->amount; i++)
-// 	{
-// 		if((this->array)[i]->add(vec))
-// 		{
-// 			cout << "\033[31;1m (!) Fatal Error:\033[0m Hash Table Built : Failed to add Vector to Hash Table." << endl;
-// 			exit(1);
-// 		}
-// 	}
-// }
+ShortedList* Hypercube::range_search(double range)
+{
+	ShortedList* final_list = new ShortedList(0);
+	SL_Node* current_list_node = this->shorted_list->first;
+
+	while (current_list_node != nullptr)
+	{
+		Vector* vector = current_list_node->v;
+		double distance = current_list_node->dist;
+
+		if (distance <= range)
+			final_list->add(vector, distance);
+
+		current_list_node = current_list_node->next;
+	}
+
+	return final_list;
+}

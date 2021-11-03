@@ -10,7 +10,7 @@
 using namespace std;
 
 // Sinple Hash Table Struct that uses randomized Hash Functions
-struct HashTable_Cube{
+struct Hypercube{
 	Bucket *bucs;	             // Array of Buckets
 	ShortedList *shorted_list; // The sorted list that will help with the search
 	unsigned size;	           // The amount of Buckets
@@ -22,8 +22,8 @@ struct HashTable_Cube{
 	vector<int> visited_bucket_keys;
 	F *f;			                 // The Hash function used on this Hash Table
 
-	HashTable_Cube(int k, unsigned tableSize, unsigned v_size);
-	~HashTable_Cube();
+	Hypercube(unsigned k, unsigned tableSize, unsigned v_size);
+	~Hypercube();
 
 	int add(Vector *vec);
 	void loadVectors(VectorArray *arr);
@@ -32,19 +32,9 @@ struct HashTable_Cube{
 	void analyze_query_vectors(VectorArray *query_vector_array);
 	void iterate_bucket(Bucket* bucket, Vector* query_vector);
 	int get_next_bucket_key(int last_bucket_key);
-	ShortedList* k_nearest_neighbors_search(Vector *query, std::string output);
-	void range_search(Vector *query, double R, std::string output);
+	ShortedList* search_hypercube(Vector *query);
+	ShortedList* k_nearest_neighbors_search(unsigned k);
+	ShortedList* range_search(double range);
 };
-
-// Multiple Hash Tables used for Cube
-// struct MultiHash_Cube{
-// 	HashTable_Cube **array;	// Array containing the Hash Tables
-// 	unsigned amount;		// The amount of Hash Tables
-//
-// 	MultiHash_Cube(int k, unsigned tableSize, unsigned v_size);
-// 	~MultiHash_Cube();
-//
-// 	void add(Vector *vec);
-// };
 
 #endif

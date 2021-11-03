@@ -31,14 +31,14 @@ int main(int argc, char *argv[]){
 		// query_vecs.print();
 
 		// Testing the cube structure
-		HashTable_Cube cube(args.k, getFileLines(args.input_file)/4, getFileLineLength(args.input_file)-1);
+		Hypercube hypercube(args.k, getFileLines(args.input_file)/4, getFileLineLength(args.input_file)-1);
 
-		cube.set_search_limits(args.probes, args.M, args.k);
+		hypercube.set_search_limits(args.probes, args.M, args.k);
 
 		std::cout << "Setted search limits" << std::endl;
 
-		cube.loadVectors(&input_vecs);
-		ShortedList* shorted_list = cube.k_nearest_neighbors_search(&input_vecs.array[0], "");
+		hypercube.loadVectors(&input_vecs);
+		ShortedList* shorted_list = hypercube.search_hypercube(&input_vecs.array[0]);
 
 		// cube.analyze_query_vectors(&query_vecs);
 
