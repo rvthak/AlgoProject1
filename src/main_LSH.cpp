@@ -9,7 +9,7 @@
 #include "shortedList.h"
 
 
-void report_results(std::string filename, unsigned id, unsigned k, 
+void report_results(std::string filename, unsigned id, 
 	                ShortedList *lsh,   double lsh_t, 
 	                ShortedList *naive, double naive_t, 
 	                List *range);
@@ -50,11 +50,22 @@ int main(int argc, char *argv[]){
 
 		// Load the input data into the structs
 		lsh.loadVectors(&input_vecs);
+		// lsh.print();
+		// std::cout << " Average Vectors per Bucket: " << lsh.averageBucketSize() << std::endl;
 
 		// For each query Vector:
 		for(unsigned i=0; i<(query_vecs.size); i++){
 
 			Vector *q = &((query_vecs.array)[i]);
+
+
+			// lsh_results = lsh.kNN_lsh( q , args.k );
+			// lsh_results->print();
+			// delete lsh_results;
+
+			// r_results = lsh.range_search( q , args.R );
+			// r_results->print();
+			// delete r_results;
 
 			// Run and time the tests
 			timer.tic();  lsh_results   = lsh.kNN_lsh( q , args.k );                            lsh_time   = timer.toc();
@@ -62,7 +73,7 @@ int main(int argc, char *argv[]){
 			r_results = lsh.range_search( q , args.R );
 
 			// Write a report on the output file
-			report_results(args.output_file, q->id, args.k, lsh_results, lsh_time, naive_results, naive_time, r_results);
+			report_results(args.output_file, q->id, lsh_results, lsh_time, naive_results, naive_time, r_results);
 		
 			// Results written in output file => Free the memory
 			delete lsh_results; delete r_results; delete naive_results;
@@ -82,11 +93,12 @@ int main(int argc, char *argv[]){
 //------------------------------------------------------------------------------------------------------------------
 
 // Function used to Report the test results 
-void report_results(std::string filename, unsigned id, unsigned k, 
+void report_results(std::string filename, unsigned id, 
 	                ShortedList *lsh, double lsh_t, 
 	                ShortedList *naive, double naive_t, 
 	                List *range){
 
+	unsigned i=1;
  	std::ofstream file;
 
  	// Open the output file in append mode 
@@ -97,12 +109,9 @@ void report_results(std::string filename, unsigned id, unsigned k,
 
 	// Write the results for each "i-th" Neighbor found (Comparing LSH and Naive-True)
 	SL_Node *lsh_p = lsh->first, *naive_p = naive->first;
-	for(unsigned i=0; i<k; i++){
-
-		if( lsh_p == nullptr ){ break; }
-
-		file << "Nearest neighbor-" << i+1 << ": " << lsh_p->v->id << std::endl;
-		file << "distanceLSH: "  << lsh_p->dist   << std::endl;
+	while( lsh_p != nullptr ){
+		file << "Nearest neighbor-" << i++ << ": " << lsh_p->v->id << std::endl;
+		file << "distanceLSH:  "  << lsh_p->dist   << std::endl;
 		file << "distanceTrue: " << naive_p->dist << std::endl;
 
 		lsh_p   = lsh_p->next;
@@ -116,7 +125,7 @@ void report_results(std::string filename, unsigned id, unsigned k,
 	// Write the Range search results 
 	file << "R-near neighbors:" << std::endl;
 	List_node *cur = range->first;
-	for(unsigned i=0; i<(range->size); i++){
+	while( cur != nullptr ){
 		file << cur->data->id << std::endl;
 		cur = cur->next;
 	}
