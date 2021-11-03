@@ -8,7 +8,7 @@ unsigned getFileLines(std::string name);
 unsigned getFileLineLength(std::string name);
 bool fileExists(std::string name);
 
-unsigned long mod(long x, unsigned long y);
+long mod(long x, long y);
 void clearContents(std::string filename);
 
 bool question(std::string q);

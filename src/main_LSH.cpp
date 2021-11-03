@@ -8,6 +8,7 @@
 #include "hash_lsh.h"
 #include "shortedList.h"
 
+#define SIZE_DIVISOR 16
 
 void report_results(std::string filename, unsigned id, 
 	                ShortedList *lsh,   double lsh_t, 
@@ -46,7 +47,7 @@ int main(int argc, char *argv[]){
 		VectorArray query_vecs(args.query_file);
 
 		// Create the LSH Structs
-		MultiHash lsh(args.k, args.L, getFileLines(args.input_file)/4, getFileLineLength(args.input_file)-1);
+		MultiHash lsh(args.k, args.L, getFileLines(args.input_file)/SIZE_DIVISOR, getFileLineLength(args.input_file)-1);
 
 		// Load the input data into the structs
 		lsh.loadVectors(&input_vecs);

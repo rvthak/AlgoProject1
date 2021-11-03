@@ -30,8 +30,8 @@ HashTable::~HashTable(){
 
 // Add the given Vector to "this" Hash Table
 int HashTable::add(Vector *vec){
-	unsigned id = this->g->ID(vec);
-	unsigned key = mod(id, g->tableSize);
+	long id = this->g->ID(vec);
+	long key = mod(id, g->tableSize);
 	//std::cout << " KEY: " << key << ", ID: " << id << std::endl;
 	return (this->bucs)[key].add(vec, id);
 }
@@ -97,8 +97,8 @@ void MultiHash::loadVectors(VectorArray *arr){
 
 // LSH search for the k approximate Nearest Neighbors of the given query Vector
 ShortedList *MultiHash::kNN_lsh(Vector *query, unsigned k){
-	int key;
-	unsigned ID;
+	long key;
+	long ID;
 	Bucket *bucket;
 	ShortedList *list = new ShortedList(k);
 
@@ -119,8 +119,9 @@ ShortedList *MultiHash::kNN_lsh(Vector *query, unsigned k){
 			//std::cout << " checking id" << std::endl;
 
 			// Only check Vectors with the same ID to avoid computing unnecessary distances
-			//if( cur->ID == ID )
-				//std::cout << " Adding" << std::endl;
+			if( cur->ID == ID ){
+				std::cout << " Adding" << std::endl;
+			}
 				list->add( cur->data, query->l2(cur->data));
 			
 
@@ -132,8 +133,8 @@ ShortedList *MultiHash::kNN_lsh(Vector *query, unsigned k){
 
 // Range search for the k approximate Nearest Neighbors of the given query Vector
 List *MultiHash::range_search(Vector *query, double R){
-	int key;
-	unsigned ID;
+	long key;
+	long ID;
 	double dist;
 	Bucket *bucket;
 	List *list = new List();

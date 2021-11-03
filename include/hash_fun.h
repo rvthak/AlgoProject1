@@ -11,8 +11,7 @@ struct H{
 	unsigned w; 		// "Window" - NOT zero
 
 	H(unsigned v_size);
-	~H();
-	int hash(Vector *p);
+	long hash(Vector *p);
 };
 
 // Hash Function "g" (Randomized on initialization) - Calculated based on sub-hash-functions "h"
@@ -27,17 +26,17 @@ struct G{
 
 	G(int k, unsigned tableSize, unsigned v_size);
 	~G();
-	int hash(Vector *p);
-	int ID(Vector *p);
+	long hash(Vector *p);
+	long ID(Vector *p);
 };
 
 // CHRIS 01.11.2021 START
 
 struct F {
 	unsigned dimensions;
-	unsigned table_size;     // The tableSize which comes from dimensions
-	unsigned k;				      // The amount of "h" hash functions
-	H **h; 						      // Array of h values
+	unsigned table_size;	// The tableSize which comes from dimensions
+	unsigned k;				// The amount of "h" hash functions
+	H **h;					// Array of h values
 
 	F(unsigned k, unsigned dimensions, unsigned table_size);
 	~F();

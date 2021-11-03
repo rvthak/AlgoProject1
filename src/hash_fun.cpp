@@ -8,7 +8,7 @@
 #include <functional>
 
 #define M_VALUE 4294967291UL
-#define W_VALUE  3 // in [2,6]
+#define W_VALUE  4 // in [2,6]
 #define MAX_32_INT 2147483647
 
 H::H(unsigned v_size){
@@ -17,11 +17,9 @@ H::H(unsigned v_size){
 	this->v = normal_vector(0,1,v_size);
 }
 
-H::~H(){}
-
 // Calculate the hash key of the given Vector
 // Based on math type, slide 19 of "nnCluster.pdf"
-int H::hash(Vector *p){
+long H::hash(Vector *p){
 	return floor( (inner_product((p->vec).begin(), (p->vec).end(), (this->v).begin(), 0) + (this->t)) / (this->w) );
 }
 
@@ -63,14 +61,14 @@ G::~G(){
 }
 
 // Calculate the hash key of the given Vector (Sum-Based)
-int G::hash(Vector *p){
+long G::hash(Vector *p){
 	return mod( this->ID(p) , this->tableSize ); 
 }
 
 // Calculate the ID of the given Vector (Sum-Based)
 // Based on the math type on slide 21 of "nnCluster.pdf"
-int G::ID(Vector *p){
-	int sum=0;
+long G::ID(Vector *p){
+	long sum=0;
 	for(unsigned i=0; i<(this->k); i++){
 		sum += mod( (this->r)[i] * (this->h)[i]->hash(p) , this->M );
 	}
