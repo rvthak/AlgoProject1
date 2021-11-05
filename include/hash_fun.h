@@ -11,7 +11,7 @@ struct H{
 	unsigned w; 		// "Window" - NOT zero
 
 	H(unsigned v_size);
-	long hash(Vector *p);
+	int hash(Vector *p);
 };
 
 // Hash Function "g" (Randomized on initialization) - Calculated based on sub-hash-functions "h"

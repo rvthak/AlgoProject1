@@ -19,7 +19,7 @@ H::H(unsigned v_size){
 
 // Calculate the hash key of the given Vector
 // Based on math type, slide 19 of "nnCluster.pdf"
-long H::hash(Vector *p){
+int H::hash(Vector *p){
 	return floor( (inner_product((p->vec).begin(), (p->vec).end(), (this->v).begin(), 0) + (this->t)) / (this->w) );
 }
 
