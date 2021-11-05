@@ -29,10 +29,9 @@ struct Hypercube{
 	void loadVectors(VectorArray *arr);
 	void set_search_limits(unsigned probes, unsigned M, unsigned k);
 	int project_query_vector(Vector *query_vector);
-	void analyze_query_vectors(VectorArray *query_vector_array);
 	void iterate_bucket(Bucket* bucket, Vector* query_vector);
 	int get_next_bucket_key(int last_bucket_key);
-	ShortedList* search_hypercube(Vector *query);
+	void search_hypercube(Vector *query);
 	ShortedList* k_nearest_neighbors_search(unsigned k);
 	ShortedList* range_search(double range);
 };
