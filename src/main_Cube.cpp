@@ -51,7 +51,7 @@ int main(int argc, char *argv[]){
 		for(unsigned i = 0; i < (query_vecs.size); i++)
 		{
 			Vector *query_vector = &((query_vecs.array)[i]);
-			timer.tic(); ShortedList* shorted_list = hypercube.search_hypercube(query_vector);
+			timer.tic(); hypercube.search_hypercube(query_vector);
 			timer.tic(); hypercube_results = hypercube.k_nearest_neighbors_search(args.k);
 			timer.tic(); range_results = hypercube.range_search(args.R);
 
