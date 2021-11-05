@@ -29,6 +29,11 @@ Hypercube::Hypercube(unsigned k, unsigned tableSize, unsigned v_size){
 	}
 
 	// Create the randomized hash function
+	cout << "Going to create F hash struct with arguments : " << endl;
+	cout << "K : " << k << endl;
+	cout << "Dimensions : " << v_size << endl;
+	cout << "Table Size : " << tableSize << endl;
+
 	this->f = new F(k, v_size, tableSize);
 
 	if(this->f == nullptr)

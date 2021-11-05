@@ -77,6 +77,7 @@ long G::ID(Vector *p){
 
 F::F(unsigned k, unsigned dimensions, unsigned table_size)
 {
+	this->k = k;
 	this->dimensions = dimensions;
 	this->table_size = table_size;
 
@@ -97,9 +98,9 @@ F::F(unsigned k, unsigned dimensions, unsigned table_size)
 	}
 
 	std::cout << "Successfully created F struct with : " << std::endl;
+	std::cout << "Count of H Hash Functions (K) : " << this->k << std::endl;
 	std::cout << "Dimensions : " << this->dimensions << std::endl;
 	std::cout << "Table Size : " << this->table_size << std::endl;
-	std::cout << "Count of H Hash Functions : " << this->k << std::endl;
 }
 
 F::~F()
@@ -118,9 +119,7 @@ int F::hash(Vector *p)
 	for(unsigned i = 0; i < (this->k); i++)
 	{
 		int h_key = (this->h)[i]->hash(p);
-		std::cout << "h_key : " << h_key << std::endl;
 		int bit = generate_bit_from_h_key(h_key);
-		// std::cout << bit << " ";
 		bit_array.push_back(bit);
 	}
 
