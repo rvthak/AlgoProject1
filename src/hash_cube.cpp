@@ -9,13 +9,11 @@
 
 using namespace std;
 
-// Create a Hash table with a randomized "g" hash function
 Hypercube::Hypercube(unsigned k, unsigned tableSize, unsigned v_size){
 
 	// Allocate the Bucket Array
 	this->size = tableSize;
 	this->bucs = new Bucket[tableSize];
-	cout << "Going to create shorted list" << endl;
 	this->shorted_list = new ShortedList(0);  // TODO : ASK GIANNIS ABOUT UNSIGNED N
 
 	if(this->bucs == nullptr)
@@ -30,7 +28,6 @@ Hypercube::Hypercube(unsigned k, unsigned tableSize, unsigned v_size){
 		exit(1);
 	}
 
-
 	// Create the randomized hash function
 	this->f = new F(k, v_size, tableSize);
 
@@ -39,8 +36,6 @@ Hypercube::Hypercube(unsigned k, unsigned tableSize, unsigned v_size){
 		cout << "\033[31;1m (!) Fatal Error:\033[0m Memory : Failed to create F hash function." << endl;
 		exit(1);
 	}
-
-	cout << "Created hash table for cube!" << endl;
 }
 
 Hypercube::~Hypercube(){
@@ -112,7 +107,8 @@ void Hypercube::iterate_bucket(Bucket* bucket, Vector* query_vector)
 {
 	Bucket_node *current_bucket_node = bucket->first;
 
-	if (current_bucket_node == nullptr) cout << "nullptr!!" << endl;
+	// TODO : Uncomment line bellow
+	// if (current_bucket_node == nullptr) cout << "nullptr!!" << endl;
 
 	while (current_bucket_node != nullptr)
 	{

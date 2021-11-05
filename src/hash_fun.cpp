@@ -62,7 +62,7 @@ G::~G(){
 
 // Calculate the hash key of the given Vector (Sum-Based)
 long G::hash(Vector *p){
-	return mod( this->ID(p) , this->tableSize ); 
+	return mod( this->ID(p) , this->tableSize );
 }
 
 // Calculate the ID of the given Vector (Sum-Based)
@@ -74,9 +74,6 @@ long G::ID(Vector *p){
 	}
 	return mod(sum, this->M);
 }
-
-
-// CHRIS 01.11.2021 START
 
 F::F(unsigned k, unsigned dimensions, unsigned table_size)
 {
@@ -99,7 +96,10 @@ F::F(unsigned k, unsigned dimensions, unsigned table_size)
 		}
 	}
 
-	std::cout << "Successfully created F struct with " << dimensions << " H hash functions!" << std::endl;
+	std::cout << "Successfully created F struct with : " << std::endl;
+	std::cout << "Dimensions : " << this->dimensions << std::endl;
+	std::cout << "Table Size : " << this->table_size << std::endl;
+	std::cout << "Count of H Hash Functions : " << this->k << std::endl;
 }
 
 F::~F()
@@ -115,8 +115,6 @@ int F::hash(Vector *p)
 	int hash_key_from_array, final_hash_key;
 	std::vector<int> bit_array;
 
-	// std::cout << "Bit array : " << std::endl;
-
 	for(unsigned i = 0; i < (this->k); i++)
 	{
 		int h_key = (this->h)[i]->hash(p);
@@ -131,5 +129,3 @@ int F::hash(Vector *p)
 
 	return final_hash_key;
 }
-
-// CHRIS 01.11.2021 END

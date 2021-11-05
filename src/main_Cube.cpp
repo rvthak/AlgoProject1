@@ -52,7 +52,7 @@ int main(int argc, char *argv[]){
 		{
 			Vector *query_vector = &((query_vecs.array)[i]);
 			timer.tic(); hypercube.search_hypercube(query_vector);
-			timer.tic(); hypercube_results = hypercube.k_nearest_neighbors_search(args.k);
+			timer.tic(); hypercube_results = hypercube.k_nearest_neighbors_search(args.N);
 			timer.tic(); range_results = hypercube.range_search(args.R);
 
 			report_results(args.output_file, query_vector->id, hypercube_results, hypercube_time, range_results);
