@@ -3,15 +3,14 @@
 
 #include "Vector.h"
 
-
 // Hash Function "h"
 struct H{
-	std::vector<int> v;	// Vector based on Normal Distribution
-	double t;			// added Slight random variation (Uniformly in [0,w) )
-	unsigned w; 		// "Window" - NOT zero
+	std::vector<double> v;	// Vector based on Normal Distribution
+	double t;				// Adds Slight random variation (Uniformly in [0,w) )
+	unsigned w; 			// "Window" - NOT zero
 
 	H(unsigned v_size);
-	int hash(Vector *p);
+	double hash(Vector *p);
 };
 
 // Hash Function "g" (Randomized on initialization) - Calculated based on sub-hash-functions "h"
@@ -21,29 +20,26 @@ struct G{
 	unsigned k;				// The amount of "h" hash functions
 
 	// We create both ri and hi randomly on struct init, so we need to store them
-	int *r;	// The "ri" values
+	unsigned *r;	// The "ri" values
 	H **h;	// The "hi" functions
 
 	G(int k, unsigned tableSize, unsigned v_size);
 	~G();
-	long hash(Vector *p);
-	long ID(Vector *p);
+	unsigned long hash(Vector *p);
+	unsigned long ID(Vector *p);
 };
 
-// CHRIS 01.11.2021 START
-
+// Struct used for Hypercube hashing
 struct F {
-	unsigned dimensions;
+	unsigned dimensions;	// The Dimentions of the Hypercube
 	unsigned table_size;	// The tableSize which comes from dimensions
-	unsigned k;				    // The amount of "h" hash functions
-	H **h;					      // Array of h values
+	unsigned k;				// The amount of "h" hash functions
+	H **h;		            // Array of h values
 
 	F(unsigned k, unsigned dimensions, unsigned table_size);
 	~F();
 
 	int hash(Vector *p);
 };
-
-// CHRIS 01.11.2021 END
 
 #endif

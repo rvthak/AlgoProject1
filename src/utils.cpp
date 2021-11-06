@@ -1,5 +1,6 @@
 #include "utils.h"
 #include <vector>
+#include <cmath>
 #include <cstdio>
 #include <fstream>
 #include <sstream>
@@ -72,16 +73,17 @@ bool question(string q){
 }
 
 // Modulo : Always positive
-long mod(long x, long y){
+unsigned long mod(double x, double y){
 	if( x<0 ){ x*=(-1); }
 	if( y<0 ){ y*=(-1); }
-	return x%y;
+	return (unsigned long)std::fmod(x,y);
 }
 
 // Open the given if (if it exists) and clear all of its existing contents
 void clearContents(string filename){
-	FILE *tmp = fopen(filename.c_str(), "w");
-	if( tmp!=nullptr ){ fclose(tmp); }
+	std::ofstream file;
+	file.open(filename, std::ofstream::out | std::ofstream::trunc);
+	file.close();
 }
 
 // Prints the chars of the string independently
@@ -112,6 +114,11 @@ void print_footer(void){
 	cout << "|\033[0m                                \033[36;1m Shutting Down\033[0m                                       \033[33;1m|" << endl;
 	cout << "|_____________________________________________________________________________________|\033[0m" << endl;
 	cout << endl;
+}
+
+// Print the Distance Divergence
+void print_avg_divergence(double div){
+	std::cout << "\033[33;1m (i) Average Distance Divergence: \033[0m" << div << std::endl << std::endl;
 }
 
 // Calculates the hamming distance between two given integers
@@ -148,4 +155,17 @@ int generate_bit_from_h_key(int h_key)
 {
 	int bit = (h_key % 2 == 0) ? 1 : 0;
 	return bit;
+}
+
+// Calculate the dot product between the two given vectors
+double dot_product(std::vector<int> x, std::vector<double> y){
+	if( x.size() != y.size() ){ return 0; }
+
+	unsigned size = x.size();
+	double sum = 0;
+
+	for(unsigned i=0; i<size; i++){
+		sum += (double)(x[i]) * y[i];
+	}
+	return sum;
 }

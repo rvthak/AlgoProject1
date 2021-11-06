@@ -30,8 +30,8 @@ HashTable::~HashTable(){
 
 // Add the given Vector to "this" Hash Table
 int HashTable::add(Vector *vec){
-	long id = this->g->ID(vec);
-	long key = mod(id, g->tableSize);
+	unsigned long id = this->g->ID(vec);
+	unsigned long key = mod(id, g->tableSize);
 	//std::cout << " KEY: " << key << ", ID: " << id << std::endl;
 	return (this->bucs)[key].add(vec, id);
 }
@@ -97,13 +97,15 @@ void MultiHash::loadVectors(VectorArray *arr){
 
 // LSH search for the k approximate Nearest Neighbors of the given query Vector
 ShortedList *MultiHash::kNN_lsh(Vector *query, unsigned k){
-	long key;
-	long ID;
+	unsigned long key;
+	unsigned long ID;
 	Bucket *bucket;
 	ShortedList *list = new ShortedList(k);
 
+	//std::cout << " > Query id: " << query->id << std::endl;
 	// For each existing Hash Table
 	for(unsigned i=0; i<(this->amount); i++){
+		//std::cout << "\tSearching HT[" << i+1 << "]" << std::endl;
 
 		// Calculate the ID of the query vector
 		ID = ((this->array)[i])->g->ID(query);

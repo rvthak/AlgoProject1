@@ -16,7 +16,7 @@ OBJS_CUB=$(filter-out ./obj/main_LSH.o,  $(OBJS))
 OUT_LSH=./bin/lsh
 OUT_CUB=./bin/cube
 
-RUNFLAGS_LSH=-o lsh_output.txt  -k 5 -L 10 -N 6 -R 450           -i $(INPUT_FILE) -q $(QUERY_FILE)
+RUNFLAGS_LSH=-o lsh_output.txt  -k 4 -L 30 -N 6 -R 450         -i $(INPUT_FILE) -q $(QUERY_FILE)
 RUNFLAGS_CUB=-o cube_output.txt -k 5 -M 10 -N 6 -R 2 -probes 3 -i $(INPUT_FILE) -q $(QUERY_FILE)
 
 VGFLAGS=--leak-check=full --show-leak-kinds=all --leak-resolution=high --track-origins=yes

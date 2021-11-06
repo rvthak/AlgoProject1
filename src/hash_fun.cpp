@@ -8,7 +8,7 @@
 #include <functional>
 
 #define M_VALUE 4294967291UL
-#define W_VALUE  4 // in [2,6]
+#define W_VALUE  6 // in [2,6] but increase further for range queries with large R
 #define MAX_32_INT 2147483647
 
 H::H(unsigned v_size){
@@ -19,8 +19,8 @@ H::H(unsigned v_size){
 
 // Calculate the hash key of the given Vector
 // Based on math type, slide 19 of "nnCluster.pdf"
-int H::hash(Vector *p){
-	return floor( (inner_product((p->vec).begin(), (p->vec).end(), (this->v).begin(), 0) + (this->t)) / (this->w) );
+double H::hash(Vector *p){
+	return floor( (dot_product(p->vec, this->v) + (this->t)) / (double)(this->w) );
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -32,12 +32,12 @@ G::G(int k, unsigned tableSize, unsigned v_size){
 	this->tableSize = tableSize;
 
 	// Generate uniform random values for k "r"s
-	this->r = new int[k];
+	this->r = new unsigned[k];
 	if( this->r == nullptr ){
 		std::cout << "\033[31;1m (!) Fatal Error:\033[0m Memory : Failed to allocate memory for 'r' values." << std::endl;
 		exit(1);
 	}
-	for(int i=0; i<k; i++){ (this->r)[i] = uniform_distribution(0, MAX_32_INT); }
+	for(int i=0; i<k; i++){ (this->r)[i] = uniform_distribution(1, MAX_32_INT); }
 
 	// Generate k random "h" functions
 	if( (this->h = new H*[k]) == nullptr ){
@@ -61,22 +61,23 @@ G::~G(){
 }
 
 // Calculate the hash key of the given Vector (Sum-Based)
-long G::hash(Vector *p){
+unsigned long G::hash(Vector *p){
 	return mod( this->ID(p) , this->tableSize );
 }
 
 // Calculate the ID of the given Vector (Sum-Based)
 // Based on the math type on slide 21 of "nnCluster.pdf"
-long G::ID(Vector *p){
-	long sum=0;
+unsigned long G::ID(Vector *p){
+	double sum=0;
 	for(unsigned i=0; i<(this->k); i++){
-		sum += mod( (this->r)[i] * (this->h)[i]->hash(p) , this->M );
+		sum += mod( (double)(this->r)[i] * (double)(this->h)[i]->hash(p) , this->M );
 	}
 	return mod(sum, this->M);
 }
 
-F::F(unsigned k, unsigned dimensions, unsigned table_size)
-{
+//------------------------------------------------------------------------------------------------------------------
+
+F::F(unsigned k, unsigned dimensions, unsigned table_size){
 	this->k = k;
 	this->dimensions = dimensions;
 	this->table_size = table_size;
@@ -103,16 +104,13 @@ F::F(unsigned k, unsigned dimensions, unsigned table_size)
 	std::cout << "Table Size : " << this->table_size << std::endl;
 }
 
-F::~F()
-{
-	for(unsigned i = 0; i < (this->k); i++)
-	{
+F::~F(){
+	for(unsigned i = 0; i < (this->k); i++){
 		delete (this->h)[i];
 	}
 }
 
-int F::hash(Vector *p)
-{
+int F::hash(Vector *p){
 	int hash_key_from_array, final_hash_key;
 	std::vector<int> bit_array;
 

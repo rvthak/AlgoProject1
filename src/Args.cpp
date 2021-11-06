@@ -64,7 +64,9 @@ void ARGS_LSH::read_terminal(int argc, char *argv[]){
 		else if(strcmp(argv[i],"-o")==0){
 			i++;
 			this->output_file = string(argv[i]);
-			// The output file can not exist
+			// We do not check if the output file exists or not
+			// We just clear any existing contents
+			clearContents(this->output_file);
 		}
 		else if(strcmp(argv[i],"-N")==0){
 			i++;

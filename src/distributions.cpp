@@ -15,14 +15,14 @@ unsigned uniform_distribution(unsigned lo, unsigned hi){
 }
 
 // Return a number following normal distribution with the given mean and variance
-int normal_distribution(int mean, int variance){
+double normal_distribution(int mean, int variance){
 	std::normal_distribution<double> d(mean, variance);
-	return (int)(d(gen));
+	return d(gen);
 }
 
 // Return a vector that has normally distributed coordinates
-std::vector<int> normal_vector(int mean, int variance, unsigned v_size){
-	std::vector<int> v;
+std::vector<double> normal_vector(int mean, int variance, unsigned v_size){
+	std::vector<double> v;
 	for(unsigned i=0; i<v_size; i++){
 		v.push_back( normal_distribution(mean, variance));
 	}

@@ -8,7 +8,11 @@
 #include "hash_lsh.h"
 #include "shortedList.h"
 
-#define SIZE_DIVISOR 16
+#define DIVISION_SIZE 4
+
+// Variables Used for Performance Statistics
+double ratio_sum=0;
+unsigned long count=0;
 
 void report_results(std::string filename, unsigned id, 
 	                ShortedList *lsh,   double lsh_t, 
@@ -47,7 +51,7 @@ int main(int argc, char *argv[]){
 		VectorArray query_vecs(args.query_file);
 
 		// Create the LSH Structs
-		MultiHash lsh(args.k, args.L, getFileLines(args.input_file)/SIZE_DIVISOR, getFileLineLength(args.input_file)-1);
+		MultiHash lsh(args.k, args.L, getFileLines(args.input_file)/DIVISION_SIZE, getFileLineLength(args.input_file)-1);
 
 		// Load the input data into the structs
 		lsh.loadVectors(&input_vecs);
@@ -59,18 +63,9 @@ int main(int argc, char *argv[]){
 
 			Vector *q = &((query_vecs.array)[i]);
 
-
-			// lsh_results = lsh.kNN_lsh( q , args.k );
-			// lsh_results->print();
-			// delete lsh_results;
-
-			// r_results = lsh.range_search( q , args.R );
-			// r_results->print();
-			// delete r_results;
-
 			// Run and time the tests
-			timer.tic();  lsh_results   = lsh.kNN_lsh( q , args.k );                            lsh_time   = timer.toc();
-			timer.tic();  naive_results = (ShortedList *)(input_vecs.kNN_naive( q , args.k ));  naive_time = timer.toc();
+			timer.tic();  lsh_results   = lsh.kNN_lsh( q , args.N );                            lsh_time   = timer.toc();
+			timer.tic();  naive_results = (ShortedList *)(input_vecs.kNN_naive( q , args.N ));  naive_time = timer.toc();
 			r_results = lsh.range_search( q , args.R );
 
 			// Write a report on the output file
@@ -79,6 +74,8 @@ int main(int argc, char *argv[]){
 			// Results written in output file => Free the memory
 			delete lsh_results; delete r_results; delete naive_results;
 		}
+		// Print Out the Performance Stat
+		print_avg_divergence(ratio_sum/count);
 
 		// Clear the old args
 		args.clear();
@@ -115,12 +112,15 @@ void report_results(std::string filename, unsigned id,
 		file << "distanceLSH:  "  << lsh_p->dist   << std::endl;
 		file << "distanceTrue: " << naive_p->dist << std::endl;
 
+		ratio_sum += lsh_p->dist / naive_p->dist;
+		count++;
+
 		lsh_p   = lsh_p->next;
 		naive_p = naive_p->next;
 	}
 
 	// Write the test times
-	file << "tLSH: "  << lsh_t   << std::endl;
+	file << "tLSH:  "  << lsh_t   << std::endl;
 	file << "tTrue: " << naive_t << std::endl;
 
 	// Write the Range search results 
