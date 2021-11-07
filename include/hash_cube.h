@@ -5,6 +5,7 @@
 #include "Vector.h"
 #include "hash_fun.h"
 #include "shortedList.h"
+#include "List.h"
 #include <vector>
 
 using namespace std;
@@ -33,7 +34,7 @@ struct Hypercube{
 	int get_next_bucket_key(int last_bucket_key);
 	void search_hypercube(Vector *query);
 	ShortedList* k_nearest_neighbors_search(unsigned k);
-	ShortedList* range_search(double range);
+	List* range_search(double range);
 };
 
 #endif

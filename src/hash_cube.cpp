@@ -1,11 +1,14 @@
 #include "hash_cube.h"
 #include "shortedList.h"
+#include "List.h"
 #include "utils.h"
 #include "Vector.h"
 #include "bucket.h"
 #include <iostream>
 #include <vector>
 #include <algorithm>
+
+#define MAX_32_INT 2147483647
 
 using namespace std;
 
@@ -14,7 +17,7 @@ Hypercube::Hypercube(unsigned k, unsigned tableSize, unsigned v_size){
 	// Allocate the Bucket Array
 	this->size = tableSize;
 	this->bucs = new Bucket[tableSize];
-	this->shorted_list = new ShortedList(0);  // TODO : ASK GIANNIS ABOUT UNSIGNED N
+	this->shorted_list = new ShortedList(MAX_32_INT);
 
 	if(this->bucs == nullptr)
 	{
@@ -132,7 +135,7 @@ void Hypercube::search_hypercube(Vector *query)
 	if (this->shorted_list != nullptr)
 	{
 		delete this->shorted_list;
-		this->shorted_list = new ShortedList(0);
+		this->shorted_list = new ShortedList(MAX_32_INT);
 	}
 
 	this->probes_searched = 0;
@@ -169,7 +172,7 @@ ShortedList* Hypercube::k_nearest_neighbors_search(unsigned k)
 	// From the shorted list, get the k first elemnts
 
 	unsigned counter = 0;
-	ShortedList* final_list = new ShortedList(0);
+	ShortedList* final_list = new ShortedList(k);
 	SL_Node* current_list_node = this->shorted_list->first;
 
 	while ((current_list_node != nullptr) && (counter <= k))
@@ -183,12 +186,12 @@ ShortedList* Hypercube::k_nearest_neighbors_search(unsigned k)
 	return final_list;
 }
 
-ShortedList* Hypercube::range_search(double range)
+List* Hypercube::range_search(double range)
 {
 	// From the shorted list get the elements that have
 	// a distance in the range provided
 
-	ShortedList* final_list = new ShortedList(0);
+	List* final_list = new List();
 	SL_Node* current_list_node = this->shorted_list->first;
 
 	while (current_list_node != nullptr)
@@ -197,7 +200,7 @@ ShortedList* Hypercube::range_search(double range)
 		double distance = current_list_node->dist;
 
 		if (distance <= range)
-			final_list->add(vector, distance);
+			final_list->add(vector);
 
 		current_list_node = current_list_node->next;
 	}
