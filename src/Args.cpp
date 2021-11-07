@@ -198,7 +198,7 @@ void ARGS_Cube::read_terminal(int argc, char *argv[]){
 		else if(strcmp(argv[i],"-q")==0){
 			i++;
 			this->query_file = string(argv[i]);
-			arg_file_exists("input_file", this->input_file);
+			arg_file_exists("query_file", this->query_file);
 		}
 		else if(strcmp(argv[i],"-k")==0){
 			i++;
@@ -221,7 +221,9 @@ void ARGS_Cube::read_terminal(int argc, char *argv[]){
 		else if(strcmp(argv[i],"-o")==0){
 			i++;
 			this->output_file = string(argv[i]);
-			// The output file can not exist
+			// We do not check if the output file exists or not
+			// We just clear any existing contents
+			clearContents(this->output_file);
 		}
 		else if(strcmp(argv[i],"-N")==0){
 			i++;
@@ -275,6 +277,8 @@ void ARGS_Cube::read_args(){
 		read_arg("output_file");
 		if( cin >> this->output_file ){
 			// We do not check if the output file exists or not
+			// We just clear any existing contents
+			clearContents(this->output_file);
 		}
 		else{ error_arg("output_file"); }
 	}
