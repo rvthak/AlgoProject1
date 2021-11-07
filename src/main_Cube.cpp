@@ -21,11 +21,11 @@ int main(int argc, char *argv[]){
 
 	// Create a Timer to time the tests
 	Timer timer;
-	double hypercube_time;
+	double hypercube_time, naive_time;
 
 	// Pointers to the test results
-	ShortedList* hypercube_results;
-	List* range_results;
+	ShortedList *hypercube_results, *naive_results;
+	List *range_results;
 
 	// Read the given terminal args (if any), and store any args you find
 	args.read_terminal(argc, argv);
@@ -51,9 +51,10 @@ int main(int argc, char *argv[]){
 		for(unsigned i = 0; i < (query_vecs.size); i++)
 		{
 			Vector *query_vector = &((query_vecs.array)[i]);
-			timer.tic(); hypercube.search_hypercube(query_vector);
-			timer.tic(); hypercube_results = hypercube.k_nearest_neighbors_search(args.N);
-			timer.tic(); range_results = hypercube.range_search(args.R);
+			hypercube.search_hypercube(query_vector);
+			timer.tic(); hypercube_results = hypercube.k_nearest_neighbors_search(args.N);              hypercube_time = timer.toc();
+			timer.tic();  naive_results = (ShortedList*)(input_vecs.kNN_naive(query_vector, args.N));  naive_time = timer.toc(); 
+			range_results = hypercube.range_search(args.R);
 
 			// report_results(args.output_file, query_vector->id, hypercube_results, hypercube_time, range_results);
 		}
