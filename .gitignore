@@ -2,3 +2,4 @@ datasets/**
 bin/**
 obj/**
 lsh_output.txt
+cube_output.txt
