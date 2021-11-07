@@ -33,8 +33,9 @@ int main(int argc, char *argv[]){
 	args.print();
 
 	// Create a Timer to time the tests
-	Timer timer;
+	Timer t, timer;
 	double lsh_time, naive_time;
+	t.tic();
 
 	// Pointers to the test results
 	ShortedList *lsh_results, *naive_results;
@@ -76,14 +77,14 @@ int main(int argc, char *argv[]){
 		}
 		// Print Out the Performance Stat
 		print_avg_divergence(ratio_sum/count);
+		print_time( t.toc() );
 
 		// Clear the old args
 		args.clear();
 
 		// Ask user if he wants to stop the program
-		running = question(" Would you like to exit the program?");
+		running = !question(" Would you like to exit the program?");
 	}
-
 	print_footer();
 	return 0;
 }

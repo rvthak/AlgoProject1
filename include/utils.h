@@ -17,6 +17,7 @@ void printStr(char *str);
 void print_header(void);
 void print_footer(void);
 void print_avg_divergence(double div);
+void print_time(double time);
 
 int hamming_distance(int a, int b);
 int convert_bit_array_to_decimal(std::vector<int> bit_array);
