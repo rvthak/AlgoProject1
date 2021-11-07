@@ -8,9 +8,16 @@
 #include <iostream>
 #include <fstream>
 
+#define DIVISION_SIZE 4
+
+// Variables Used for Performance Statistics
+double ratio_sum = 0;
+unsigned long count = 0;
+
 void report_results(std::string filename, unsigned id,
-	                  ShortedList *hypercube_results, double hypercube_time,
-	                  ShortedList *range_results);
+	                ShortedList *hypercube_results, double hypercube_time,
+	                ShortedList *naive, double naive_time,
+	                List *range_results);
 
 int main(int argc, char *argv[]){
 	bool running = true;
@@ -53,10 +60,16 @@ int main(int argc, char *argv[]){
 			Vector *query_vector = &((query_vecs.array)[i]);
 			hypercube.search_hypercube(query_vector);
 			timer.tic(); hypercube_results = hypercube.k_nearest_neighbors_search(args.N);              hypercube_time = timer.toc();
-			timer.tic();  naive_results = (ShortedList*)(input_vecs.kNN_naive(query_vector, args.N));  naive_time = timer.toc(); 
+			timer.tic(); naive_results = (ShortedList*)(input_vecs.kNN_naive(query_vector, args.N));  naive_time = timer.toc();
 			range_results = hypercube.range_search(args.R);
 
-			// report_results(args.output_file, query_vector->id, hypercube_results, hypercube_time, range_results);
+			report_results(args.output_file, query_vector->id,
+				 						 hypercube_results, hypercube_time,
+				 						 naive_results, naive_time,
+										 range_results);
+
+			// Results written in output file => Free the memory
+			delete hypercube_results; delete range_results; delete naive_results;
 		}
 
 		// Clear the old args
@@ -70,41 +83,48 @@ int main(int argc, char *argv[]){
 	return 0;
 }
 
+//------------------------------------------------------------------------------------------------------------------
 
+// Function used to Report the test results
 void report_results(std::string filename, unsigned id,
-	                  ShortedList *hypercube_results, double hypercube_time,
-	                  ShortedList *range_results)
+	                ShortedList *hypercube_results, double hypercube_time,
+	                ShortedList *naive, double naive_time,
+	                List *range_results)
 {
 	unsigned i=1;
-	std::ofstream file;
+ 	std::ofstream file;
 
-	// Open the output file in append mode
+ 	// Open the output file in append mode
 	file.open(filename, std::ios_base::app);
 
 	// Write the query id
 	file << "Query: " << id << std::endl;
 
 	// Write the results for each "i-th" Neighbor found (Comparing LSH and Naive-True)
-	SL_Node *hypercube_point = hypercube_results->first;
-	while( hypercube_point != nullptr ){
-		file << "Nearest neighbor-" << i++ << ": " << hypercube_point->v->id << std::endl;
-		file << "distanceHypercube:  "  << hypercube_point->dist   << std::endl;
-		// file << "distanceTrue: " << naive_p->dist << std::endl;
+	SL_Node *hypercube_p = hypercube_results->first, *naive_p = naive->first;
+	while( hypercube_p != nullptr ){
+		file << "Nearest neighbor-" << i++ << ": " << hypercube_p->v->id << std::endl;
+		file << "distanceHypercube:  "  << hypercube_p->dist   << std::endl;
+		file << "distanceTrue: " << naive_p->dist << std::endl;
 
-		hypercube_point = hypercube_point->next;
-		// naive_p = naive_p->next;
+		ratio_sum += hypercube_p->dist / naive_p->dist;
+		count++;
+
+		hypercube_p   = hypercube_p->next;
+		naive_p = naive_p->next;
 	}
 
 	// Write the test times
-	file << "tHypercube: "  << hypercube_time   << std::endl;
-	// file << "tTrue: " << naive_t << std::endl;
+	file << "tHypercube:  "  << hypercube_time   << std::endl;
+	file << "tTrue: " << naive_time << std::endl;
 
 	// Write the Range search results
 	file << "R-near neighbors:" << std::endl;
-	SL_Node *cur = range_results->first;
-	while( cur != nullptr ){
-		file << cur->v->id << std::endl;
+	List_node *cur = range_results->first;
+	while(cur != nullptr)
+	{
+		file << cur->data->id << std::endl;
 		cur = cur->next;
 	}
-		file << std::endl;
+  	file << std::endl;
 }
