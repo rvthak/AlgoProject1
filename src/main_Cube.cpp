@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
 
 	// Pointers to the test results
 	ShortedList* hypercube_results;
-	ShortedList* range_results;
+	List* range_results;
 
 	// Read the given terminal args (if any), and store any args you find
 	args.read_terminal(argc, argv);
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]){
 			timer.tic(); hypercube_results = hypercube.k_nearest_neighbors_search(args.N);
 			timer.tic(); range_results = hypercube.range_search(args.R);
 
-			report_results(args.output_file, query_vector->id, hypercube_results, hypercube_time, range_results);
+			// report_results(args.output_file, query_vector->id, hypercube_results, hypercube_time, range_results);
 		}
 
 		// Clear the old args

@@ -1,5 +1,6 @@
 #include "hash_cube.h"
 #include "shortedList.h"
+#include "List.h"
 #include "utils.h"
 #include "Vector.h"
 #include "bucket.h"
@@ -185,12 +186,12 @@ ShortedList* Hypercube::k_nearest_neighbors_search(unsigned k)
 	return final_list;
 }
 
-ShortedList* Hypercube::range_search(double range)
+List* Hypercube::range_search(double range)
 {
 	// From the shorted list get the elements that have
 	// a distance in the range provided
 
-	ShortedList* final_list = new ShortedList(MAX_32_INT);
+	List* final_list = new List();
 	SL_Node* current_list_node = this->shorted_list->first;
 
 	while (current_list_node != nullptr)
@@ -199,7 +200,7 @@ ShortedList* Hypercube::range_search(double range)
 		double distance = current_list_node->dist;
 
 		if (distance <= range)
-			final_list->add(vector, distance);
+			final_list->add(vector);
 
 		current_list_node = current_list_node->next;
 	}
