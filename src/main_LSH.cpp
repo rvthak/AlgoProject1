@@ -8,7 +8,7 @@
 #include "hash_lsh.h"
 #include "shortedList.h"
 
-#define DIVISION_SIZE 4
+#define DIVISION_SIZE 16
 
 // Variables Used for Performance Statistics
 double ratio_sum=0;
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]){
 		// Load the input data into the structs
 		lsh.loadVectors(&input_vecs);
 		// lsh.print();
-		// std::cout << " Average Vectors per Bucket: " << lsh.averageBucketSize() << std::endl;
+		std::cout << " Average Vectors per Bucket: " << lsh.averageBucketSize() << std::endl;
 
 		// For each query Vector:
 		for(unsigned i=0; i<(query_vecs.size); i++){
