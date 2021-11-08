@@ -15,6 +15,11 @@ Silhouette::~Silhouette()
   delete this->vector_array_clusters;
 }
 
+Vector* Silhouette::get_next_cluster(Vector* query_vector, VectorArray* centroids_array)
+{
+
+}
+
 vector<float> Silhouette::generate_report_array()
 {
   unsigned silhouette_average_sum;

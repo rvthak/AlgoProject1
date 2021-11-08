@@ -17,6 +17,7 @@ struct Silhouette
   Silhouette(unsigned cluster_count);
 	~Silhouette();
 
+  Vector* get_next_cluster(Vector* query_vector, VectorArray* centroids_array);
   vector<float> generate_report_array();
   float generate_silhouette(unsigned index);
 };
