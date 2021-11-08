@@ -17,9 +17,9 @@ struct Silhouette
   Silhouette(unsigned cluster_count);
 	~Silhouette();
 
-  Vector* get_next_cluster(Vector* query_vector, VectorArray* centroids_array);
-  vector<float> generate_report_array();
-  float generate_silhouette(unsigned index);
+  Vector* get_next_cluster_centroid(Vector* centroid, VectorArray* centroids_array);        // TODO : CHANGE THIS TO CLUSTER DATA STRUCTURE
+  vector<float> generate_report_array(Vector* centroid, VectorArray* cluster_vector_array); // TODO : CHANGE THIS TO CLUSTER DATA STRUCTURE
+  float generate_silhouette(Vector* centroid);
 };
 
 #endif

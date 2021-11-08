@@ -1,5 +1,6 @@
 #include "Silhouette.h"
 #include "AssignedVector.h"
+#include "shortedList.h"
 #include <vector>
 
 using namespace std;
@@ -15,19 +16,33 @@ Silhouette::~Silhouette()
   delete this->vector_array_clusters;
 }
 
-Vector* Silhouette::get_next_cluster(Vector* query_vector, VectorArray* centroids_array)
+Vector* Silhouette::get_next_cluster_centroid(Vector* centroid, VectorArray* centroids_array)
 {
+  ShortedList* shorted_list = new ShortedList(this->cluster_count);
 
+  // Add all the centroids to a shorted list so that we can retreive the next centroid
+  for (unsigned i = 0; i < this->cluster_count; i++)
+  {
+    Vector* other_centroid = &centroids_array->array[i];
+    double distance = centroid->l2(other_centroid);
+    shorted_list->add(other_centroid, distance);
+  }
+
+  // We want the centroid with the smallest distance
+  // That is the 1st element in the shorted list
+  Vector* next_centroid = shorted_list->first->v;
+
+  return next_centroid;
 }
 
-vector<float> Silhouette::generate_report_array()
+vector<float> Silhouette::generate_report_array(Vector* centroid, VectorArray* cluster_vector_array)
 {
   unsigned silhouette_average_sum;
   float silhouette_average_total;
 
   for (unsigned i = 0; i < this->cluster_count; i++)
   {
-    float silhouette = this->generate_silhouette(i);
+    float silhouette = this->generate_silhouette(centroid);
     silhouette_average_sum += silhouette;
     this->silhouette_array.push_back(silhouette);
   }
@@ -40,10 +55,10 @@ vector<float> Silhouette::generate_report_array()
 
 // This method runs for n elements
 // But which elements ??
-float Silhouette::generate_silhouette(unsigned cluter_index)
+float Silhouette::generate_silhouette(Vector* centroid)
 {
-  int a;    // Average distance of index to objects in same cluster
-  int b;    // Average distance of index to objects in the next best (neighbor) cluster_count
+  int a;    // Average distance of centroid to vectors in same cluster
+  int b;    // Average distance of centroid to objects in the next best (neighbor) cluster_count
   float silhouette;
 
   if (a < b)
