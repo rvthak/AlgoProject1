@@ -12,6 +12,8 @@ struct Silhouette
 
   Silhouette(unsigned cluster_count);
 	~Silhouette();
+
+  float generate_result_silhouette(unsigned index);
 };
 
 #endif
