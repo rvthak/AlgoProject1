@@ -13,7 +13,7 @@ Silhouette::Silhouette(unsigned cluster_count)
 
 Silhouette::~Silhouette()
 {
-  delete this->vector_array_clusters;
+  delete this->cluster_centroids;
 }
 
 Vector* Silhouette::get_next_cluster_centroid(Vector* centroid, VectorArray* centroids_array)
@@ -35,6 +35,25 @@ Vector* Silhouette::get_next_cluster_centroid(Vector* centroid, VectorArray* cen
   return next_centroid;
 }
 
+  float get_average_distances_in_cluster(Vector* centroid, VectorArray* cluster_vector_array)
+  {
+    double average_distance_sum;
+    float average_distance;
+    unsigned counter = 0;
+
+    while (&centroids_array->array[i] != nullptr)
+    {
+      Vector* vector = &centroids_array->array[i];
+      double distance = centroid->l2(vector);
+      average_distance_sum += distance;
+      counter++;
+    }
+
+    average_distance = average_distance_sum / counter;
+
+    return average_distance;
+  }
+
 vector<float> Silhouette::generate_report_array(Vector* centroid, VectorArray* cluster_vector_array)
 {
   unsigned silhouette_average_sum;
@@ -53,13 +72,21 @@ vector<float> Silhouette::generate_report_array(Vector* centroid, VectorArray* c
   return this->silhouette_array;
 }
 
-// This method runs for n elements
-// But which elements ??
 float Silhouette::generate_silhouette(Vector* centroid)
 {
-  int a;    // Average distance of centroid to vectors in same cluster
-  int b;    // Average distance of centroid to objects in the next best (neighbor) cluster_count
+  // TODO : Get vectors of current cluster
+  VectorArray* current_cluster_vectors;
+
+  // TODO : Get vectors of next nearest cluster
+  Vector* next_cluster_centroid = this->get_next_cluster_centroid(centroid, this->all_centroids);
+  VectorArray* next_cluster_vectors;
+
+  float a;    // Average distance of centroid to vectors in same cluster
+  float b;    // Average distance of centroid to objects in the next best (neighbor) cluster_count
   float silhouette;
+
+  a = this->get_average_distances_in_cluster(centroid, current_cluster_vectors);
+  b = this->get_average_distances_in_cluster(next_cluster_centroid, next_cluster_vectors);
 
   if (a < b)
     silhouette = 1 - (a / b);
