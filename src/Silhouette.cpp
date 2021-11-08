@@ -13,7 +13,7 @@ Silhouette::Silhouette(unsigned cluster_count)
 
 Silhouette::~Silhouette()
 {
-  delete this->cluster_centroids;
+  delete this->all_centroids;
 }
 
 Vector* Silhouette::get_next_cluster_centroid(Vector* centroid, VectorArray* centroids_array)
@@ -41,9 +41,9 @@ Vector* Silhouette::get_next_cluster_centroid(Vector* centroid, VectorArray* cen
     float average_distance;
     unsigned counter = 0;
 
-    while (&centroids_array->array[i] != nullptr)
+    while (&cluster_vector_array->array[counter] != nullptr)
     {
-      Vector* vector = &centroids_array->array[i];
+      Vector* vector = &cluster_vector_array->array[counter];
       double distance = centroid->l2(vector);
       average_distance_sum += distance;
       counter++;
