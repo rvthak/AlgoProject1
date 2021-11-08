@@ -10,6 +10,6 @@ struct AssignedVector
   Vector* vector;
   Vector* centroid;
   double distance;     // Distance of vector to centroid
-}
+};
 
 #endif

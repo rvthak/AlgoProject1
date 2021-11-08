@@ -97,11 +97,6 @@ F::F(unsigned k, unsigned dimensions, unsigned table_size){
 			exit(1);
 		}
 	}
-
-	std::cout << "Successfully created F struct with : " << std::endl;
-	std::cout << "Count of H Hash Functions (K) : " << this->k << std::endl;
-	std::cout << "Dimensions : " << this->dimensions << std::endl;
-	std::cout << "Table Size : " << this->table_size << std::endl;
 }
 
 F::~F(){
