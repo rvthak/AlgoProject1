@@ -64,11 +64,18 @@ struct AssignmentArray{
 	Vector   *array;		// The Vector Storage Array itself
 	Centroid **centroid;	// An array that stores pointers to the corresponding Centroid for each Vector 
 	double   *dist;			// An array that stores the distance between the corresponding Vector and its Centroid
-	
+	bool    change;			// Boolean that indicates if one or more Vector assignment changes were made
+
 	AssignmentArray(std::string filename);
 	~AssignmentArray();
 
+	void Lloyds_assignment(CentroidArray *cent);
+	void Lsh_assignment(CentroidArray *cent, int L, int k);
+	void Cube_assignment(CentroidArray *cent, int M, int k, int probes);
+	void update_centroids(CentroidArray *cent);
+
 	void print();	// Print all the Vector-Centroid-distance pairs
+	bool changed();	// return 'true' if one or more assignments changed
 
 private:
 	int add_vector(unsigned index, int id, std::vector<int> data);

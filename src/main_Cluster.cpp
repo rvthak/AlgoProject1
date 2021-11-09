@@ -18,24 +18,24 @@ int main(int argc, char *argv[]){
 
 	// Load the Vectors from the Input file and store them
 	AssignmentArray ass_vecs(args.input_file);
-	ass_vecs.print();
-	
+	//ass_vecs.print();
+
 	// Create and initialize the Cluster Centroids
 	CentroidArray cent(args.k);
 	cent.initialize_random(&ass_vecs);
 	//cent.print();
 
-	// Main Method loop
-	// while(1){
+	// While there are assignment changes
+	while( ass_vecs.changed() ){
 
+		// < Assignment Stage > : Assign each Vector to its nearest Centroid's Cluster
+		if( args.method == "Classic" ){ ass_vecs.Lloyds_assignment(&cent); } 
+		else if( args.method == "LSH" ){ ass_vecs.Lsh_assignment(&cent, args.L, args.k_lsh); } 
+		else { ass_vecs.Cube_assignment(&cent, args.M, args.k_cube, args.probes); }
 
-	// 	// Assign each Vector to its nearest Centroid's Cluster
-
-
-	// 	// Update Centroids
-
-
-	// }
+		// < Update State > : Update Centroids
+		ass_vecs.update_centroids(&cent);
+	}
 
 	// Print Silhouette
 

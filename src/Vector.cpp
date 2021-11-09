@@ -220,6 +220,7 @@ void CentroidArray::print(){
 
 // Create a AssignmentArray containing the given file contents
 AssignmentArray::AssignmentArray(std::string filename){
+	this->change = true;
 
 	// Get the total amount of records in the target file
 	this->size = getFileLines(filename);
@@ -326,4 +327,31 @@ void AssignmentArray::parse_input(string filename){
 		// This line's Vector was loaded successfully
 		vecs_loaded++; 
 	}
+}
+
+// return 'true' if one or more assignments changed
+bool AssignmentArray::changed(){ return this->change; }
+
+//------------------------------------------------------------------------------------------------------------------
+
+// Assignment using exact Lloyds with reverse range search
+void AssignmentArray::Lloyds_assignment(CentroidArray *cent){
+
+}
+
+// Assignment using LSH
+void AssignmentArray::Lsh_assignment(CentroidArray *cent, int L, int k){
+
+}
+
+// Assignment using Hypercube
+void AssignmentArray::Cube_assignment(CentroidArray *cent, int M, int k, int probes){
+
+}
+
+//------------------------------------------------------------------------------------------------------------------
+
+// Update the Centroid Values by calculating vector averages
+void AssignmentArray::update_centroids(CentroidArray *cent){
+
 }
