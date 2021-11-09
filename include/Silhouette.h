@@ -1,10 +1,8 @@
-#ifndef LIST
-#define LIST
+#ifndef SILHOUETTE
+#define SILHOUETTE
 
 #include "AssignedVector.h"
 #include <vector>
-
-#pragma once
 
 using namespace std;
 

@@ -5,8 +5,6 @@
 #include "timer.h"
 #include "Vector.h"
 
-
-
 int main(int argc, char *argv[]){
 	bool running = true;
 	print_header();
@@ -28,3 +26,9 @@ int main(int argc, char *argv[]){
 	print_footer();
 	return 0;
 }
+
+//------------------------------------------------------------------------------------------------------------------
+
+
+// Silhouette Print
+
