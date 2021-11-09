@@ -2,11 +2,15 @@
 #include "Vector.h"
 #include "shortedList.h"
 #include <cmath>
+#include <cstdlib>
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
+
+Vector::Vector(){ this->id = 0; }
 
 // Prints all the data stored in a Vector
 void Vector::print(){
@@ -134,3 +138,192 @@ void *VectorArray::kNN_naive(Vector *query, unsigned k){
 	}
 	return list;
 } // (!) Remember to free the returned list afterwards
+
+//------------------------------------------------------------------------------------------------------------------
+
+// Prints all the data stored in a Centroid
+void Centroid::print(){
+	for (int val: this->vec){
+		cout << val << ' ';
+	} cout << endl;
+}
+
+// Calculate the norm between "this" and p
+double Centroid::l2(Vector *p){
+	int tmp;
+	double sum=0;
+
+	for(long unsigned i=0; i<(p->vec).size(); i++){
+		tmp = (this->vec)[i] - (p->vec)[i]; 
+		sum += tmp * tmp;
+	}
+	return sqrt(sum);
+}
+
+// Copies the values of the given Vector to the Centroid
+void Centroid::copy_Vec(Vector *p){
+	// Clear the current contents
+	(this->vec).clear();
+
+	// Copy the vector over
+	this->vec = p->vec;
+}
+
+//------------------------------------------------------------------------------------------------------------------
+
+CentroidArray::CentroidArray(unsigned size){
+	this->array = new Centroid[size];
+	this->size = size;
+}
+
+CentroidArray::~CentroidArray(){
+	delete [] this->array;
+}
+
+// Initialize the Centroids completely randomly (May lead to bad initial state => bad clustering)
+void CentroidArray::initialize_random(void *ass_vecs){
+	// A vector containing the indexes of the already assigned Initial Centroid-Vectors
+	std::vector<int> assigned_indexes;
+	unsigned random_index;
+
+	// Get a random Vector for each Centroid 
+	for(unsigned i=0; i<(this->size); i++){
+
+		do{
+			// Get a random Vector from the AssignmentArray
+			random_index = rand()%(this->size);
+		// Ensure that it hasn't already been selected as a Centroid
+		}while( find(assigned_indexes.begin(), assigned_indexes.end(), random_index) != assigned_indexes.end() );
+		
+		// Assign the Centroid
+		(this->array)[i].copy_Vec( &((((AssignmentArray *)ass_vecs)->array)[random_index]) );
+		
+		// Add the Assigned Vector Index to a vector to avoid douplicate assignments
+		assigned_indexes.push_back(random_index);
+	}
+}
+
+// Use a probabilistic function to attempt to get good initial values for the Centroids
+void CentroidArray::initialize_plus_plus(void *ass_vecs){
+
+}
+
+// Prints all the Centroids Stored
+void CentroidArray::print(){
+	for(unsigned i=0; i<(this->size); i++){
+		(this->array)[i].print();
+		cout << endl;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------
+
+// Create a AssignmentArray containing the given file contents
+AssignmentArray::AssignmentArray(std::string filename){
+
+	// Get the total amount of records in the target file
+	this->size = getFileLines(filename);
+	if( this->size == 0 ){ 
+		cout << "\033[31;1m (!) Fatal Error:\033[0m Input Parsing : " << filename << " : File empty." << endl;
+		exit(1);
+	}
+
+	// Allocate memory to store the file records
+	this->array = new Vector[this->size];
+	if( this->array == nullptr ){
+		cout << "\033[31;1m (!) Fatal Error:\033[0m Memory  : " << filename << " : Failed to allocate memory for file records." << endl;
+		exit(1);
+	}
+
+	// Allocate memory to store the Centroid Pointers
+	this->centroid = new Centroid *[this->size];
+	if( this->centroid == nullptr ){
+		cout << "\033[31;1m (!) Fatal Error:\033[0m Memory  : " << filename << " : Failed to allocate memory for Centroid Pointers." << endl;
+		exit(1);
+	}
+
+	// Allocate memory to store the distances
+	this->dist = new double[this->size];
+	if( this->dist == nullptr ){
+		cout << "\033[31;1m (!) Fatal Error:\033[0m Memory  : " << filename << " : Failed to allocate memory for distances." << endl;
+		exit(1);
+	}
+
+	// Parse the file and store the records
+	this->parse_input(filename);
+
+	// Init the Centroid Pointers to NULL and the distances to zero
+	for(unsigned i=0; i<(this->size); i++){
+		(this->centroid)[i] = nullptr;
+		(this->dist)[i] = 0;
+	}
+}
+
+AssignmentArray::~AssignmentArray(){
+	delete [] this->array;
+	delete [] this->centroid;
+	delete [] this->dist;
+}
+
+// Prints all the Vectors Stored in the AssignmentArray
+void AssignmentArray::print(){
+	for(unsigned i=0; i<(this->size); i++){
+		(this->array)[i].print();
+		cout << " Centroid: " << endl;
+		if( (this->centroid)[i] == nullptr ){ cout << " NULL " << endl; }
+		else{ (this->centroid)[i]->print(); }
+		cout << " Distance: " << (this->dist)[i] << endl << endl;
+	}
+}
+
+// Add a vector in the given "index" of a AssignmentArray
+int AssignmentArray::add_vector(unsigned index, int id, vector<int> data){
+	if( this->size < index ){ return 1; }
+	this->array[index].id = id;
+	this->array[index].vec = data;
+	return 0;
+}
+
+// Parse the given file and load its records in the AssignmentArray
+void AssignmentArray::parse_input(string filename){
+
+	// Amount of Integers per Vector (Does not count the Vector id)
+	unsigned vec_length = getFileLineLength(filename)-1; 
+
+	// Open the file as an ifstream
+	ifstream file(filename);
+	string line;
+
+	unsigned vecs_loaded=0; // Counts the already parsed vectors 
+	int val, id=-1;
+	vector<int> tmp_vec;
+
+	// For each Vector in the file (== for each line):
+	while( getline(file, line) ){
+
+		// Convert the line into a stream for easier parsing
+		istringstream line_stream(line);
+
+		// For each integer in the Vector Line:
+		while( line_stream >> val ){
+			// Store the first integer as the Vector Id
+			if( (id==-1) && (tmp_vec.size()==0) ){ id=val; }
+			else{ tmp_vec.push_back(val); }
+		}
+
+		// If you get an illegal Vector, terminate
+		if( tmp_vec.size() != vec_length ){
+			cout << "\033[31;1m (!) Fatal Error:\033[0m Input Parsing : " << filename << " : line no " << vecs_loaded << " : Illegal Vector." << endl;
+			exit(1);
+		}//cout << " Parsed Vector: Id:" << id << ", Length:" << tmp_vec.size() << endl;
+
+		// Add the new Vector to the VectorArray Storage Array
+		this->add_vector(vecs_loaded, id, tmp_vec);
+
+		// Clear the vector contents and reset the id to "Empty", to read the next Vector
+		tmp_vec.clear(); id=-1;
+
+		// This line's Vector was loaded successfully
+		vecs_loaded++; 
+	}
+}
