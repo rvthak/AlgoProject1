@@ -18,7 +18,13 @@ int main(int argc, char *argv[]){
 	args.print();
 
 
+	Centroid cent[10];
 
+	// Initialization++
+	
+
+
+	// Main Method loop
 
 
 
