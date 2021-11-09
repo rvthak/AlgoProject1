@@ -3,8 +3,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <iostream>
+#include <fstream>
 #include <sstream>
+#include <iostream>
 
 using namespace std;
 
@@ -25,6 +26,21 @@ void error_arg(string name){
 	exit(1);
 }
 
+void error_config(unsigned lineNumber){
+	cout << "\033[31;1m (!) Input Error:\033[0m Failed to read line " << lineNumber << " of the config file." << endl;
+	exit(1);
+}
+
+void error_config(){
+	cout << "\033[31;1m (!) Input Error:\033[0m Unexpected/Corrupted Configuration file" << endl;
+	exit(1);
+}
+
+void error_missing(string name){
+	cout << "\033[31;1m (!) Input Error:\033[0m Missing value of variable: " << name << ". Please check your config file." << endl;
+	exit(1);
+}
+
 //------------------------------------------------------------------------------------------------------------------
 
 #define LSH_DEFAULT_K 4
@@ -32,7 +48,7 @@ void error_arg(string name){
 #define LSH_DEFAULT_N 1
 #define LSH_DEFAULT_R 10000
 
-// Read any given iitial terminal arguments and store them
+// Read any given initial terminal arguments and store them
 void ARGS_LSH::read_terminal(int argc, char *argv[]){
 
 	// Get the argument values
@@ -183,7 +199,7 @@ void ARGS_LSH::print(){
 #define CUBE_DEFAULT_N 1
 #define CUBE_DEFAULT_R 10000
 
-// Read any given iitial terminal arguments and store them
+// Read any given initial terminal arguments and store them
 void ARGS_Cube::read_terminal(int argc, char *argv[]){
 
 	// Get the argument values
@@ -338,5 +354,136 @@ void ARGS_Cube::print(){
 	printf( "\033[33;1m| probes: \033[0m%-75d \033[33;1m|\033[0m\n", this->probes);
 	printf( "\033[33;1m| N: \033[0m%-80d \033[33;1m|\033[0m\n", this->N);
 	printf( "\033[33;1m| R: \033[0m%-80.2f \033[33;1m|\033[0m\n", this->R);
+	cout << "\033[33;1m|_____________________________________________________________________________________|\033[0m" << endl << endl;
+}
+
+//------------------------------------------------------------------------------------------------------------------
+
+#define CLUSTER_DEFAULT_L      3
+#define CLUSTER_DEFAULT_K_LSH  4
+#define CLUSTER_DEFAULT_M      10
+#define CLUSTER_DEFAULT_K_CUBE 3
+#define CLUSTER_DEFAULT_PROBES 2
+
+// Read any given initial terminal arguments and store them
+void ARGS_Cluster::read_terminal(int argc, char *argv[]){
+
+	// Get the argument values
+	for(int i=1; i<argc; i++){
+
+		// Check the argument flag first, then get the value
+		if( strcmp(argv[i],"-i")==0 ){
+			i++;
+			this->input_file = string(argv[i]);
+			arg_file_exists("input_file", this->input_file);
+		}
+		else if(strcmp(argv[i],"-c")==0){
+			i++;
+			this->config_file = string(argv[i]);
+			arg_file_exists("config_file", this->config_file);
+
+			// Load Config file data
+			this->load_config(this->config_file);
+		}
+		else if(strcmp(argv[i],"-o")==0){
+			i++;
+			this->output_file = string(argv[i]);
+			// We do not check if the output file exists or not
+			// We just clear any existing contents
+			clearContents(this->output_file);
+		}
+		else if(strcmp(argv[i],"-m")==0){
+			i++;
+			this->method = string(argv[i]);
+			if( !(this->method == "Classic") && 
+				!(this->method == "LSH") && 
+				!(this->method == "Hypercube") )
+			{ error_arg("method"); }
+		}
+		else if(strcmp(argv[i],"-complete")==0){
+			this->complete = true;
+		}
+		// In case we dont get a known flag/string error
+		else {
+			cout <<"\033[31;1m (!) Fatal Error:\033[0m Arg parsing : Unknown arg " << argv[i] << endl;
+			exit(1); 
+		}
+	}
+}
+
+// Load the configuration values from the given file
+void ARGS_Cluster::load_config(std::string filename){
+
+	// Open the file as an ifstream
+	ifstream file(filename);
+	string line, word;
+	int val;
+	unsigned count=0; // The amount of lines read
+
+	// For each file line
+	while( getline(file, line) ){
+		count++;
+
+		// Convert the line into a stream for easier parsing
+		istringstream line_stream(line);
+
+		// Get the first word (== the parameter name)
+		line_stream >> word;
+
+		// Read its value
+		if( !(line_stream >> val) ){ error_config(count); }
+
+		// And load its value in the correct variable
+		if( word == "number_of_clusters:" ){
+			this->k = val;
+		}
+		// Allow the Variables that can default values available to not exist in the config file
+		else if( word == "number_of_vector_hash_tables:" ){
+			this->L = val;
+		}
+		else if( word == "number_of_vector_hash_functions:" ){
+			this->k_lsh = val;
+		}
+		else if( word == "max_number_M_hypercube:" ){
+			this->M = val;
+		}
+		else if( word == "number_of_hypercube_dimensions:" ){
+			this->k_cube = val;
+		}
+		else if( word == "number_of_probes:" ){
+			this->probes = val;
+		}
+		// Unknown Parameter => Error
+		else{ error_config(); }
+	}
+
+	// We don't have a deafult value for k => Error
+	if( this->k == EMPTY_INT){ error_missing("k"); }
+}
+
+// Fill "Empty" args with default values where possible
+void ARGS_Cluster::load_defaults(){
+	if( this->L      == EMPTY_INT ){ this->L      = CLUSTER_DEFAULT_L; }
+	if( this->k_lsh  == EMPTY_INT ){ this->k_lsh  = CLUSTER_DEFAULT_K_LSH; }
+	if( this->M      == EMPTY_INT ){ this->M      = CLUSTER_DEFAULT_M; }
+	if( this->k_cube == EMPTY_INT ){ this->k_cube = CLUSTER_DEFAULT_K_CUBE; }
+	if( this->probes == EMPTY_INT ){ this->probes = CLUSTER_DEFAULT_PROBES; }
+}
+
+// Print the curent args
+void ARGS_Cluster::print(){
+	cout << "\033[33;1m _____________________________________________________________________________________\033[0m"  << endl;
+	cout << "\033[33;1m|                                                                                     |\033[0m" << endl;
+	printf( "\033[33;1m| input_file:  \033[0m%-70s \033[33;1m|\033[0m\n", (this->input_file).c_str());
+	printf( "\033[33;1m| config_file: \033[0m%-70s \033[33;1m|\033[0m\n", (this->config_file).c_str());
+	printf( "\033[33;1m| output_file: \033[0m%-70s \033[33;1m|\033[0m\n", (this->output_file).c_str());
+	printf( "\033[33;1m| method:      \033[0m%-70s \033[33;1m|\033[0m\n", (this->method).c_str());
+	printf( "\033[33;1m| complete:    \033[0m%-70d \033[33;1m|\033[0m\n", (int)this->complete );
+	printf( "\033[33;1m| k:      \033[0m%-75d \033[33;1m|\033[0m\n", this->k);
+	printf( "\033[33;1m| L:      \033[0m%-75d \033[33;1m|\033[0m\n", this->L);
+	printf( "\033[33;1m| k_lsh:  \033[0m%-75d \033[33;1m|\033[0m\n", this->k_lsh);
+	printf( "\033[33;1m| M:      \033[0m%-75d \033[33;1m|\033[0m\n", this->M);
+	printf( "\033[33;1m| k_cube: \033[0m%-75d \033[33;1m|\033[0m\n", this->k_cube);
+	printf( "\033[33;1m| probes: \033[0m%-75d \033[33;1m|\033[0m\n", this->probes);
 	cout << "\033[33;1m|_____________________________________________________________________________________|\033[0m" << endl << endl;
 }
