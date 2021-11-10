@@ -29,8 +29,8 @@ int main(int argc, char *argv[]){
 	while( ass_vecs.changed() ){
 
 		// < Assignment Stage > : Assign each Vector to its nearest Centroid's Cluster
-		if( args.method == "Classic" ){ ass_vecs.Lloyds_assignment(&cent); } 
-		else if( args.method == "LSH" ){ ass_vecs.Lsh_assignment(&cent, args.L, args.k_lsh); } 
+		if( args.method == "Classic" ){ ass_vecs.Lloyds_assignment(&cent); }
+		else if( args.method == "LSH" ){ ass_vecs.Lsh_assignment(&cent, args.L, args.k_lsh); }
 		else { ass_vecs.Cube_assignment(&cent, args.M, args.k_cube, args.probes); }
 
 		// < Update State > : Update Centroids
@@ -47,4 +47,3 @@ int main(int argc, char *argv[]){
 
 
 // Silhouette Print
-
