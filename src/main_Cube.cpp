@@ -8,8 +8,6 @@
 #include <iostream>
 #include <fstream>
 
-#define DIVISION_SIZE 4
-
 // Variables Used for Performance Statistics
 double ratio_sum = 0;
 unsigned long count = 0;
@@ -50,7 +48,7 @@ int main(int argc, char *argv[]){
 		VectorArray query_vecs(args.query_file);
 
 		// Testing the cube structure
-		Hypercube hypercube(args.k, getFileLines(args.input_file)/4, getFileLineLength(args.input_file)-1);
+		Hypercube hypercube(args.k, getFileLines(args.input_file)/DIVISION_SIZE_CUBE, getFileLineLength(args.input_file)-1);
 
 		hypercube.set_search_limits(args.probes, args.M, args.k);
 		hypercube.loadVectors(&input_vecs);
