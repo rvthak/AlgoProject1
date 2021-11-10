@@ -1,13 +1,15 @@
 #include "Silhouette.h"
-#include "AssignedVector.h"
+#include "Vector.h"
 #include "shortedList.h"
 #include <vector>
 
 using namespace std;
 
-Silhouette::Silhouette(unsigned cluster_count)
+Silhouette::Silhouette(unsigned cluster_count, CentroidArray* all_centroids, AssignmentArray* assignment_array)
 {
   this->cluster_count = cluster_count;
+  this->all_centroids = all_centroids;
+  this->assignment_array = assignment_array;
   this->silhouette_array = vector<float>();
 }
 
@@ -16,7 +18,7 @@ Silhouette::~Silhouette()
   delete this->all_centroids;
 }
 
-Vector* Silhouette::get_next_cluster_centroid(Vector* centroid, VectorArray* centroids_array)
+Centroid* Silhouette::get_next_cluster_centroid(Centroid* centroid, VectorArray* centroids_array)
 {
   ShortedList* shorted_list = new ShortedList(this->cluster_count);
 
@@ -35,32 +37,60 @@ Vector* Silhouette::get_next_cluster_centroid(Vector* centroid, VectorArray* cen
   return next_centroid;
 }
 
-  float get_average_distances_in_cluster(Vector* centroid, VectorArray* cluster_vector_array)
+VectorArray* Silhouette::get_vectors_in_cluster(Centroid* centroid)
+{
+  VectorArray* current_cluster_vectors;
+  unsigned current_cluster_vectors_index = 0;
+
+  // Get the vectors for this cluster
+  for (unsigned i = 0; i < this->assignment_array->size; i++)
   {
-    double average_distance_sum;
-    float average_distance;
-    unsigned counter = 0;
+    Centroid* centroid_candidate = this->assignment_array->centroid[i];
 
-    while (&cluster_vector_array->array[counter] != nullptr)
+    // If this check passes, the vector in the assignment array is in the examined cluster
+    if (centroid_candidate == centroid)
     {
-      Vector* vector = &cluster_vector_array->array[counter];
-      double distance = centroid->l2(vector);
-      average_distance_sum += distance;
-      counter++;
+      Vector* vector = this->assignment_array->array[i];
+      double distance = this->assignment_array->dist[i];
+
+      current_cluster_vectors->add_vector(current_cluster_vectors_index, vector->id, vector->vec);
+      current_cluster_vectors_index++;
     }
+    else
+    {
+      continue;
+    }
+  }
+}
 
-    average_distance = average_distance_sum / counter;
+float Silhouette::get_average_distances_in_cluster(Centroid* centroid, VectorArray* cluster_vector_array)
+{
+  double average_distance_sum;
+  float average_distance;
+  unsigned counter = 0;
 
-    return average_distance;
+  while (&cluster_vector_array->array[counter] != nullptr)
+  {
+    Vector* vector = &cluster_vector_array->array[counter];
+    double distance = centroid->l2(vector);
+    average_distance_sum += distance;
+    counter++;
   }
 
-vector<float> Silhouette::generate_report_array(Vector* centroid, VectorArray* cluster_vector_array)
+  average_distance = average_distance_sum / counter;
+
+  return average_distance;
+}
+
+vector<float> Silhouette::generate_report_array()
 {
   unsigned silhouette_average_sum;
+  float silhouette_average;
   float silhouette_average_total;
 
   for (unsigned i = 0; i < this->cluster_count; i++)
   {
+    Centroid* centroid = this->all_centroids->array[i];
     float silhouette = this->generate_silhouette(centroid);
     silhouette_average_sum += silhouette;
     this->silhouette_array.push_back(silhouette);
@@ -72,14 +102,15 @@ vector<float> Silhouette::generate_report_array(Vector* centroid, VectorArray* c
   return this->silhouette_array;
 }
 
-float Silhouette::generate_silhouette(Vector* centroid)
+float Silhouette::generate_silhouette(Centroid* centroid)
 {
   // TODO : Get vectors of current cluster
   VectorArray* current_cluster_vectors;
-
-  // TODO : Get vectors of next nearest cluster
-  Vector* next_cluster_centroid = this->get_next_cluster_centroid(centroid, this->all_centroids);
   VectorArray* next_cluster_vectors;
+  Centroid* next_cluster_centroid = this->get_next_cluster_centroid(centroid, this->all_centroids);
+
+  current_cluster_vectors = this->get_vectors_in_cluster(centroid);
+  next_cluster_vectors = this->get_vectors_in_cluster(next_cluster_centroid);
 
   float a;    // Average distance of centroid to vectors in same cluster
   float b;    // Average distance of centroid to objects in the next best (neighbor) cluster_count
