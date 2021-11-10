@@ -174,3 +174,22 @@ double dot_product(std::vector<int> x, std::vector<double> y){
 	}
 	return sum;
 }
+
+// Add the two vectors element to element
+std::vector<int> sum_vectors(std::vector<int> *x, std::vector<int> *y){
+	std::vector<int> sum;
+	for(unsigned i=0; i<(x->size()); i++){
+		sum.push_back( (*x)[i] + (*y)[i] );
+	}
+	return sum;
+}
+
+// Divide all the elements of 'x' by 'd'
+std::vector<int> div_vector(std::vector<int> *x, unsigned d){
+	std::vector<int> div;
+	for(unsigned i=0; i<(x->size()); i++){
+		div.push_back( (*x)[i] / d );
+	}
+	return div;
+}
+
