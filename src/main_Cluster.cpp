@@ -92,4 +92,3 @@ void Cube_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int M, int 
 
 
 // Silhouette Print
-
