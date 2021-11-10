@@ -8,8 +8,6 @@
 #include "hash_lsh.h"
 #include "shortedList.h"
 
-#define DIVISION_SIZE 16
-
 // Variables Used for Performance Statistics
 double ratio_sum=0;
 unsigned long count=0;

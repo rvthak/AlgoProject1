@@ -35,24 +35,30 @@ private:
 
 // Centroid Representation Struct
 struct Centroid{
-	std::vector<int> vec;	// The Centroid Itself
-	unsigned cluster_size;	// The amount of Vectors Assigned on this Centroid's Cluster
+	Vector vec;							// The Centroid Itself
+	unsigned cluster_size;				// The amount of Vectors Assigned on this Centroid's Cluster
+	std::vector<Vector *> assignments; 	// A vector containing all the Vectors currently assigned on this cluster
 
 	void print();				// Print the Vector Contents
 	double l2(Vector *p);		// Returns the l2 norm between the two vectors
 	void copy_Vec(Vector *p);	// Copies the values of the given Vector to the Centroid
+	void assign(Vector *p);		// Assign the given vector to this Centroid
 };
 
 // Array Struct Used to store Centroids
 struct CentroidArray{
 	unsigned size;		// The size of the Array == The amount of Centroids
 	Centroid *array;	// The Centroid Storage Array itself
+	bool    change;		// Boolean that indicates if one or more Centroid changes were made
 
 	CentroidArray(unsigned size);
 	~CentroidArray();
 
 	void initialize_random(void *ass_vecs);
 	void initialize_plus_plus(void *ass_vecs);
+	void reset_clusters();
+	int  get_index(Vector *vec);
+	bool changed();	
 	void print();
 };
 
@@ -64,18 +70,13 @@ struct AssignmentArray{
 	Vector   *array;		// The Vector Storage Array itself
 	Centroid **centroid;	// An array that stores pointers to the corresponding Centroid for each Vector 
 	double   *dist;			// An array that stores the distance between the corresponding Vector and its Centroid
-	bool    change;			// Boolean that indicates if one or more Vector assignment changes were made
 
 	AssignmentArray(std::string filename);
 	~AssignmentArray();
 
-	void Lloyds_assignment(CentroidArray *cent);
-	void Lsh_assignment(CentroidArray *cent, int L, int k);
-	void Cube_assignment(CentroidArray *cent, int M, int k, int probes);
 	void update_centroids(CentroidArray *cent);
 
 	void print();	// Print all the Vector-Centroid-distance pairs
-	bool changed();	// return 'true' if one or more assignments changed
 
 private:
 	int add_vector(unsigned index, int id, std::vector<int> data);

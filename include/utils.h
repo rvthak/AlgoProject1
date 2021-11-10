@@ -24,5 +24,7 @@ int convert_bit_array_to_decimal(std::vector<int> bit_array);
 int generate_bit_from_h_key(int h_key);
 
 double dot_product(std::vector<int> x, std::vector<double> y);
+std::vector<int> sum_vectors(std::vector<int> *x, std::vector<int> *y);
+std::vector<int> div_vector(std::vector<int> *x, unsigned d);
 
 #endif

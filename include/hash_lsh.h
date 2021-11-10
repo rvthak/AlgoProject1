@@ -8,6 +8,8 @@
 #include "hash_fun.h"
 #include "shortedList.h"
 
+#define DIVISION_SIZE 16
+
 // Sinple Hash Table Struct that uses randomized Hash Functions
 struct HashTable{
 	Bucket *bucs;	// Array of Buckets
@@ -33,6 +35,7 @@ struct MultiHash{
 
 	void add(Vector *vec);
 	void loadVectors(VectorArray *arr);
+	void loadVectors(CentroidArray *arr);
 
 	void print();
 	double averageBucketSize();

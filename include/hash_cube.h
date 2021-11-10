@@ -10,6 +10,8 @@
 
 using namespace std;
 
+#define DIVISION_SIZE_CUBE 4
+
 // Sinple Hash Table Struct that uses randomized Hash Functions
 struct Hypercube{
 	Bucket *bucs;	             // Array of Buckets
@@ -28,6 +30,7 @@ struct Hypercube{
 
 	int add(Vector *vec);
 	void loadVectors(VectorArray *arr);
+	void loadVectors(CentroidArray *arr);
 	void set_search_limits(unsigned probes, unsigned M, unsigned k);
 	int project_query_vector(Vector *query_vector);
 	void iterate_bucket(Bucket* bucket, Vector* query_vector);

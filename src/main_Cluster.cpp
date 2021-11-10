@@ -4,6 +4,12 @@
 #include "utils.h"
 #include "timer.h"
 #include "Vector.h"
+#include "hash_lsh.h"
+#include "hash_cube.h"
+
+void Classic_assignment(AssignmentArray *ass_vecs, CentroidArray *cent);
+void Lsh_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int L, int k);
+void Cube_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int M, int k, int probes);
 
 int main(int argc, char *argv[]){
 	print_header();
@@ -26,12 +32,12 @@ int main(int argc, char *argv[]){
 	//cent.print();
 
 	// While there are assignment changes
-	while( ass_vecs.changed() ){
+	while( cent.changed() ){
 
 		// < Assignment Stage > : Assign each Vector to its nearest Centroid's Cluster
-		if( args.method == "Classic" ){ ass_vecs.Lloyds_assignment(&cent); }
-		else if( args.method == "LSH" ){ ass_vecs.Lsh_assignment(&cent, args.L, args.k_lsh); }
-		else { ass_vecs.Cube_assignment(&cent, args.M, args.k_cube, args.probes); }
+		if( args.method == "Classic" ){ Classic_assignment(&ass_vecs, &cent); } 
+		else if( args.method == "LSH" ){ Lsh_assignment(&ass_vecs, &cent, args.L, args.k_lsh); } 
+		else { Cube_assignment(&ass_vecs, &cent, args.M, args.k_cube, args.probes); }
 
 		// < Update State > : Update Centroids
 		ass_vecs.update_centroids(&cent);
@@ -41,6 +47,45 @@ int main(int argc, char *argv[]){
 
 	print_footer();
 	return 0;
+}
+
+//------------------------------------------------------------------------------------------------------------------
+
+// < Assignment > : Assign each Vector to its nearest Centroid's Cluster
+
+// Assignment using exact Lloyds with reverse range search
+void Classic_assignment(AssignmentArray *ass_vecs, CentroidArray *cent){
+
+}
+
+// Assignment using LSH
+void Lsh_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int L, int k){
+	ShortedList *lsh_results;
+	int index;
+
+	// Create the LSH Structs
+	MultiHash lsh(k, L, (cent->size)/DIVISION_SIZE, (cent->array)[0].vec.vec.size());
+
+	// Load the input data into the structs
+	lsh.loadVectors(cent);
+
+	// For each existing Vector
+	for(unsigned i=0; i<(ass_vecs->size); i++){
+
+		// Find its nearest Centroid-Neighbor
+		lsh_results = lsh.kNN_lsh( &((ass_vecs->array)[i]), 1 ); 
+
+		// Assign the Vector to its cluster
+		index = cent->get_index( lsh_results->first->v );
+		(cent->array)[index].assign( lsh_results->first->v );
+
+		delete lsh_results;
+	}
+}
+
+// Assignment using Hypercube
+void Cube_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int M, int k, int probes){
+
 }
 
 //------------------------------------------------------------------------------------------------------------------

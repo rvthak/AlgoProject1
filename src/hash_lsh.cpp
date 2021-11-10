@@ -95,6 +95,14 @@ void MultiHash::loadVectors(VectorArray *arr){
 	}
 }
 
+// Load all the Vectors of the CentroidArray in the MultiHash Struct
+void MultiHash::loadVectors(CentroidArray *arr){
+	// Add each Centroid to all the Hash tables
+	for(unsigned i=0; i<(arr->size); i++){
+		this->add( &((arr->array)[i].vec) );
+	}
+}
+
 // LSH search for the k approximate Nearest Neighbors of the given query Vector
 ShortedList *MultiHash::kNN_lsh(Vector *query, unsigned k){
 	unsigned long key;
