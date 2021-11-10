@@ -117,7 +117,7 @@ float Silhouette::generate_silhouette(Centroid* centroid)
   float silhouette;
 
   a = this->get_average_distances_in_cluster(centroid, current_cluster_vectors);
-  b = this->get_average_distances_in_cluster(next_cluster_centroid, next_cluster_vectors);
+  b = this->get_average_distances_in_cluster(centroid, next_cluster_vectors);
 
   if (a < b)
     silhouette = 1 - (a / b);
