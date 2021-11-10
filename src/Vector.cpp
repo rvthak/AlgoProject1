@@ -57,9 +57,7 @@ VectorArray::VectorArray(string filename){
 }
 
 // Free a VectorArray
-VectorArray::~VectorArray(){
-	delete [] this->array;
-}
+VectorArray::~VectorArray(){ delete [] this->array; }
 
 // Add a vector in the given "index" of a VectorArray
 int VectorArray::add_vector(unsigned index, int id, vector<int> data){
@@ -143,7 +141,7 @@ void *VectorArray::kNN_naive(Vector *query, unsigned k){
 
 // Prints all the data stored in a Centroid
 void Centroid::print(){
-	for (int val: this->vec){
+	for (int val: this->vec.vec){
 		cout << val << ' ';
 	} cout << endl;
 }
@@ -154,7 +152,7 @@ double Centroid::l2(Vector *p){
 	double sum=0;
 
 	for(long unsigned i=0; i<(p->vec).size(); i++){
-		tmp = (this->vec)[i] - (p->vec)[i]; 
+		tmp = (this->vec.vec)[i] - (p->vec)[i]; 
 		sum += tmp * tmp;
 	}
 	return sqrt(sum);
@@ -163,10 +161,16 @@ double Centroid::l2(Vector *p){
 // Copies the values of the given Vector to the Centroid
 void Centroid::copy_Vec(Vector *p){
 	// Clear the current contents
-	(this->vec).clear();
+	(this->vec.vec).clear();
 
 	// Copy the vector over
-	this->vec = p->vec;
+	this->vec.vec = p->vec;
+}
+
+// Assign the given vector to this Centroid
+void Centroid::assign(Vector *p){
+	(this->assignments).push_back(p);
+	(this->cluster_size)++;
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -174,11 +178,10 @@ void Centroid::copy_Vec(Vector *p){
 CentroidArray::CentroidArray(unsigned size){
 	this->array = new Centroid[size];
 	this->size = size;
+	this->change = true;
 }
 
-CentroidArray::~CentroidArray(){
-	delete [] this->array;
-}
+CentroidArray::~CentroidArray(){ delete [] this->array; }
 
 // Initialize the Centroids completely randomly (May lead to bad initial state => bad clustering)
 void CentroidArray::initialize_random(void *ass_vecs){
@@ -216,11 +219,30 @@ void CentroidArray::print(){
 	}
 }
 
+// Resets all the assignments
+void CentroidArray::reset_clusters(){
+
+	for(unsigned i=0; i<(this->size); i++){
+		(this->array)[i].cluster_size = 0;
+		(this->array)[i].assignments.clear();
+	}
+}
+
+// return 'true' if one or more assignments changed
+bool CentroidArray::changed(){ return this->change; }
+
+// Returns the index of the given Centroid-Vector or -1 if it doesnt exist
+int CentroidArray::get_index(Vector *vec){
+	for(unsigned i=0; i<(this->size); i++){
+		if( (this->array)[i].vec.vec == vec->vec ){return i;}
+	}
+	return -1;
+}
+
 //------------------------------------------------------------------------------------------------------------------
 
 // Create a AssignmentArray containing the given file contents
 AssignmentArray::AssignmentArray(std::string filename){
-	this->change = true;
 
 	// Get the total amount of records in the target file
 	this->size = getFileLines(filename);
@@ -329,29 +351,24 @@ void AssignmentArray::parse_input(string filename){
 	}
 }
 
-// return 'true' if one or more assignments changed
-bool AssignmentArray::changed(){ return this->change; }
-
 //------------------------------------------------------------------------------------------------------------------
 
-// Assignment using exact Lloyds with reverse range search
-void AssignmentArray::Lloyds_assignment(CentroidArray *cent){
-
-}
-
-// Assignment using LSH
-void AssignmentArray::Lsh_assignment(CentroidArray *cent, int L, int k){
-
-}
-
-// Assignment using Hypercube
-void AssignmentArray::Cube_assignment(CentroidArray *cent, int M, int k, int probes){
-
-}
-
-//------------------------------------------------------------------------------------------------------------------
+// < Update State > : Update Centroids
 
 // Update the Centroid Values by calculating vector averages
 void AssignmentArray::update_centroids(CentroidArray *cent){
+	unsigned vec_size = (cent->array)[0].vec.vec.size();
 
+	// For each Centroid (== for each Cluster)
+	for(unsigned i=0; i<(cent->size); i++){
+
+		std::vector<int> mean(vec_size, 0);
+
+		// Sum all the vectors that belong to this cluster
+		for(unsigned j=0; j<( (cent->array)[i].assignments.size() ); j++){
+			mean = sum_vectors(&mean, &(((cent->array)[i].assignments[j])->vec) );
+		}
+		// And assign the new Cluster Centroid
+		(cent->array)[i].vec.vec = div_vector(&mean, (cent->array)[i].assignments.size() );
+	}
 }
