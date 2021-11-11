@@ -113,6 +113,14 @@ bool ShortedList::exists(Vector *v, double dist){
 
 // Remove the current last item from the list
 void ShortedList::delete_last(){
+
+	if(this->cur_len == 1){
+		delete this->first;
+		this->first = nullptr;
+		this->last = nullptr;
+		this->cur_len = 0;
+	}
+
 	SL_Node *tmp;
 	tmp = this->last->prev;
 	delete this->last;

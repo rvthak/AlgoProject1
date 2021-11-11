@@ -359,10 +359,16 @@ void AssignmentArray::parse_input(string filename){
 void AssignmentArray::update_centroids(CentroidArray *cent){
 	unsigned vec_size = (cent->array)[0].vec.vec.size();
 
+	cent->change = false;
+
 	// For each Centroid (== for each Cluster)
 	for(unsigned i=0; i<(cent->size); i++){
 
+		// If no centroids are assigned to this Centroid => don't move it
+		if( (cent->array)[i].assignments.size() == 0 ){ continue; }
+
 		std::vector<int> mean(vec_size, 0);
+		std::vector<int> prev = (cent->array)[i].vec.vec;
 
 		// Sum all the vectors that belong to this cluster
 		for(unsigned j=0; j<( (cent->array)[i].assignments.size() ); j++){
@@ -370,5 +376,8 @@ void AssignmentArray::update_centroids(CentroidArray *cent){
 		}
 		// And assign the new Cluster Centroid
 		(cent->array)[i].vec.vec = div_vector(&mean, (cent->array)[i].assignments.size() );
+	
+		// If any centroid changes => update "changed" flag
+		if( prev == (cent->array)[i].vec.vec ){ cent->change = true; }
 	}
 }

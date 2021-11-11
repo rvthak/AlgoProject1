@@ -82,16 +82,16 @@ vgext_cube: $(OUT_CUB)
 	valgrind $(VGFLAGS) $(OUT_CUB) $(RUNFLAGS_CUB)
 
 vg_cluster: $(OUT_CLS)
-	valgrind $(OUT_CLS) $(RUNFLAGS_CLS_CLAS)
+	valgrind $(OUT_CLS) $(RUNFLAGS_CLS_LSH)
 
 vgext_cluster: $(OUT_CLS)
-	valgrind $(VGFLAGS) $(OUT_CLS) $(RUNFLAGS_CLS_CLAS)
+	valgrind $(VGFLAGS) $(OUT_CLS) $(RUNFLAGS_CLS_LSH)
 
 #--------------------------------------------------------------------------
 
-run: cluster
+run: cluster_lsh
 
-vg: vg_lsh
+vg: vg_cluster
 
 vgext: vgext_lsh
 

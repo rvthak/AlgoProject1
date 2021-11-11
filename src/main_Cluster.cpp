@@ -7,6 +7,8 @@
 #include "hash_lsh.h"
 #include "hash_cube.h"
 
+using namespace std;
+
 void Classic_assignment(AssignmentArray *ass_vecs, CentroidArray *cent);
 void Lsh_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int L, int k);
 void Cube_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int M, int k, int probes);
@@ -34,11 +36,16 @@ int main(int argc, char *argv[]){
 	// While there are assignment changes
 	while( cent.changed() ){
 
+		// Make sure the clusters are empty before starting the assignments
+		cent.reset_clusters();
+
+		cout << " Assignment: " << endl;
 		// < Assignment Stage > : Assign each Vector to its nearest Centroid's Cluster
 		if( args.method == "Classic" ){ Classic_assignment(&ass_vecs, &cent); } 
 		else if( args.method == "LSH" ){ Lsh_assignment(&ass_vecs, &cent, args.L, args.k_lsh); } 
 		else { Cube_assignment(&ass_vecs, &cent, args.M, args.k_cube, args.probes); }
 
+		cout << " Update: " << endl;
 		// < Update State > : Update Centroids
 		ass_vecs.update_centroids(&cent);
 	}
@@ -64,8 +71,8 @@ void Lsh_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int L, int k
 	int index;
 
 	// Create the LSH Structs
-	MultiHash lsh(k, L, (cent->size)/DIVISION_SIZE, (cent->array)[0].vec.vec.size());
-
+	MultiHash lsh(k, L, (cent->size), (cent->array)[0].vec.vec.size());
+	
 	// Load the input data into the structs
 	lsh.loadVectors(cent);
 

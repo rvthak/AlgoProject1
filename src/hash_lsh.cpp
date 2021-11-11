@@ -68,6 +68,7 @@ MultiHash::MultiHash(int k, int L, unsigned tableSize, unsigned v_size){
 		}
 	}
 	this->amount = L;
+	std::cout << " Created Multihash > k: " << k << ", L: " << L << ", TableSize: " << tableSize << ", VectorSize: " << v_size << std::endl;
 }
 
 MultiHash::~MultiHash(){
