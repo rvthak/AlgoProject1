@@ -2,6 +2,7 @@
 #include "Vector.h"
 #include "shortedList.h"
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -61,6 +62,10 @@ VectorArray* Silhouette::get_vectors_in_cluster(Centroid* centroid)
       continue;
     }
   }
+
+  current_cluster_vectors->size = current_cluster_vectors_index;
+
+  return current_cluster_vectors;
 }
 
 float Silhouette::get_average_distances_in_cluster(Centroid* centroid, VectorArray* cluster_vector_array)
@@ -127,4 +132,25 @@ float Silhouette::generate_silhouette(Centroid* centroid)
     silhouette = (b / a) - 1;
 
   return silhouette;
+}
+
+
+void Silhouette::print_clusters()
+{
+  for (unsigned i = 0; i < this->cluster_count; i++)
+  {
+    string line = "CLUSTER-" + string(i) + " {centroid, ";
+    Centroid* centroid = this->all_centroids->array[i];
+    VectorArray* cluster_vectors = this->get_vectors_in_cluster(centroid);
+
+    for (unsigned k = 0; k -< cluster_vectors->size; k++)
+    {
+      Vector* vector = cluster_vectors->array[k];
+      string id = string(vector->id);
+      line += id + ", ";
+    }
+
+    line += "}";
+    cout << line << endl;
+  }
 }

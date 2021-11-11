@@ -21,6 +21,7 @@ struct Silhouette
   float get_average_distances_in_cluster(Centroid* centroid, VectorArray* cluster_vector_array);
   vector<float> generate_report_array();
   float generate_silhouette(Centroid* centroid);
+  void print_clusters();
 };
 
 #endif
