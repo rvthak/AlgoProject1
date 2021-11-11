@@ -64,14 +64,6 @@ void Hypercube::loadVectors(VectorArray *arr)
 	}
 }
 
-void Hypercube::loadVectors(CentroidArray *arr)
-{
-	for(unsigned i = 0; i < (arr->size); i++)
-	{
-		this->add(&((arr->array)[i].vec));
-	}
-}
-
 void Hypercube::set_search_limits(unsigned probes, unsigned M, unsigned k)
 {
 	this->probes = probes;

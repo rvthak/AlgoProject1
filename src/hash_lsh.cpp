@@ -96,11 +96,11 @@ void MultiHash::loadVectors(VectorArray *arr){
 	}
 }
 
-// Load all the Vectors of the CentroidArray in the MultiHash Struct
-void MultiHash::loadVectors(CentroidArray *arr){
-	// Add each Centroid to all the Hash tables
+// Load all the Vectors of the AssignmentArray in the MultiHash Struct
+void MultiHash::loadVectors(AssignmentArray *arr){
+	// Add each vector to all the Hash tables
 	for(unsigned i=0; i<(arr->size); i++){
-		this->add( &((arr->array)[i].vec) );
+		this->add( &((arr->array)[i]) );
 	}
 }
 

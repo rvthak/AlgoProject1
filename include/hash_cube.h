@@ -30,7 +30,6 @@ struct Hypercube{
 
 	int add(Vector *vec);
 	void loadVectors(VectorArray *arr);
-	void loadVectors(CentroidArray *arr);
 	void set_search_limits(unsigned probes, unsigned M, unsigned k);
 	int project_query_vector(Vector *query_vector);
 	void iterate_bucket(Bucket* bucket, Vector* query_vector);

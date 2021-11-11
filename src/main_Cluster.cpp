@@ -9,6 +9,7 @@
 
 using namespace std;
 
+Centroid *exact_centroid(Vector *v, CentroidArray *cent, double *d);
 void Classic_assignment(AssignmentArray *ass_vecs, CentroidArray *cent);
 void Lsh_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int L, int k);
 void Cube_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int M, int k, int probes);
@@ -60,39 +61,75 @@ int main(int argc, char *argv[]){
 
 // < Assignment > : Assign each Vector to its nearest Centroid's Cluster
 
-// Assignment using exact Lloyds with reverse range search
+// Assignment using exact approach => True Distances
 void Classic_assignment(AssignmentArray *ass_vecs, CentroidArray *cent){
+	double dist;
 
+	// For each Existing Vector
+	for(unsigned i=0; i<(ass_vecs->size); i++){
+		// Calculate the exact distances between the Vector and every Centroid 
+		// and return the true nearest Centroid
+		(ass_vecs->centroid)[i] = exact_centroid( &((ass_vecs->array)[i]), cent , &dist );
+		(ass_vecs->centroid)[i]->assign( &((ass_vecs->array)[i]) );
+		(ass_vecs->dist)[i] = dist;
+		//cout << " Assigned: " << i << " to Centroid: " << (ass_vecs->centroid)[i] << endl;
+	}
 }
 
-// Assignment using LSH
+// Assignment using LSH => Approximate Distance
 void Lsh_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int L, int k){
-	ShortedList *lsh_results;
-	int index;
+	// ShortedList *lsh_results;
+	// int index;
 
-	// Create the LSH Structs
-	MultiHash lsh(k, L, (cent->size), (cent->array)[0].vec.vec.size());
+	// // Create the LSH Structs
+	// MultiHash lsh(k, L, (cent->size), (cent->array)[0].vec.vec.size());
 	
-	// Load the input data into the structs
-	lsh.loadVectors(cent);
+	// // Load the input data into the structs
+	// lsh.loadVectors(cent);
 
-	// For each existing Vector
-	for(unsigned i=0; i<(ass_vecs->size); i++){
+	// // For each existing Vector
+	// for(unsigned i=0; i<(ass_vecs->size); i++){
 
-		// Find its nearest Centroid-Neighbor
-		lsh_results = lsh.kNN_lsh( &((ass_vecs->array)[i]), 1 ); 
+	// 	// Find its nearest Centroid-Neighbor
+	// 	lsh_results = lsh.kNN_lsh( &((ass_vecs->array)[i]), 1 ); 
 
-		// Assign the Vector to its cluster
-		index = cent->get_index( lsh_results->first->v );
-		(cent->array)[index].assign( lsh_results->first->v );
+	// 	// Assign the Vector to its cluster
+	// 	index = cent->get_index( lsh_results->first->v );
+	// 	(cent->array)[index].assign( lsh_results->first->v );
 
-		delete lsh_results;
-	}
+	// 	delete lsh_results;
+	// }
 }
 
 // Assignment using Hypercube
 void Cube_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int M, int k, int probes){
 
+}
+
+//------------------------------------------------------------------------------------------------------------------
+
+// Returns the exact nearest Centroid by calculating all the distances
+Centroid *exact_centroid(Vector *v, CentroidArray *cent, double *d){
+	Centroid *near;
+	double min_dist, dist;
+
+	// Set the first Centroid as the nearest for now
+	near = &((cent->array)[0]);
+	min_dist = v->l2( &(near->vec) );
+	
+	// For each remaining Centroid
+	for(unsigned i=1; i<(cent->size); i++){
+		// Calculate the Vector's exact distance
+		dist = v->l2( &((cent->array)[i].vec) );
+
+		// If it is the nearest Centroid => store it
+		if( dist < min_dist ){
+			min_dist = dist;
+			near = &((cent->array)[i]);
+		}
+	}
+	*d = min_dist;
+	return near;
 }
 
 //------------------------------------------------------------------------------------------------------------------

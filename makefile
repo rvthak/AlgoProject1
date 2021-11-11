@@ -89,7 +89,7 @@ vgext_cluster: $(OUT_CLS)
 
 #--------------------------------------------------------------------------
 
-run: cluster_lsh
+run: cluster
 
 vg: vg_cluster
 

@@ -364,7 +364,7 @@ void AssignmentArray::update_centroids(CentroidArray *cent){
 	// For each Centroid (== for each Cluster)
 	for(unsigned i=0; i<(cent->size); i++){
 
-		// If no centroids are assigned to this Centroid => don't move it
+		// If no Vectors are assigned to this Centroid => don't move it
 		if( (cent->array)[i].assignments.size() == 0 ){ continue; }
 
 		std::vector<int> mean(vec_size, 0);
@@ -378,6 +378,8 @@ void AssignmentArray::update_centroids(CentroidArray *cent){
 		(cent->array)[i].vec.vec = div_vector(&mean, (cent->array)[i].assignments.size() );
 	
 		// If any centroid changes => update "changed" flag
-		if( prev == (cent->array)[i].vec.vec ){ cent->change = true; }
+		if( !(prev == (cent->array)[i].vec.vec) ){ cent->change = true; }
+		//cout << " Updated: " << i << endl;
+		//(cent->array)[i].vec.print();
 	}
 }

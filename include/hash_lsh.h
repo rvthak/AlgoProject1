@@ -35,8 +35,7 @@ struct MultiHash{
 
 	void add(Vector *vec);
 	void loadVectors(VectorArray *arr);
-	void loadVectors(CentroidArray *arr);
-
+	void loadVectors(AssignmentArray *arr);
 	void print();
 	double averageBucketSize();
 
