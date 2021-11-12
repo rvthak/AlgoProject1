@@ -36,7 +36,17 @@ double Vector::l2(Vector *p){
 
 // CHRIS 12.11.21 START
 
-VectorArray::VectorArray() { }
+VectorArray::VectorArray(unsigned size)
+{
+	this->size = size;
+
+	// Allocate memory to store the file records
+	this->array = new Vector[this->size];
+	if( this->array == nullptr ){
+		cout << "\033[31;1m (!) Fatal Error:\033[0m Memory <<  Failed to allocate memory for file records." << endl;
+		exit(1);
+	}
+}
 
 // CHRIS 12.11.21 END
 
@@ -67,6 +77,9 @@ VectorArray::~VectorArray(){ delete [] this->array; }
 
 // Add a vector in the given "index" of a VectorArray
 int VectorArray::add_vector(unsigned index, int id, vector<int> data){
+	cout << "Entered add_vector()" << endl;
+
+	if (this->array == nullptr) cout << "nullptr!!!!!" << endl;
 
 	if( this->size < index ){ return 1; }
 

@@ -21,8 +21,8 @@ struct VectorArray{
 	Vector *array;	// The Vector Storage Array itself
 
 	// CHRIS 12.11.21
-	VectorArray();
-	
+	VectorArray(unsigned size);
+
 	VectorArray(std::string filename);
 	~VectorArray();
 
