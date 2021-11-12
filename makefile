@@ -13,7 +13,7 @@ OBJS=$(patsubst ./src/%.cpp, ./obj/%.o, $(SRCS))
 
 OBJS_LSH=$(filter-out ./obj/main_Cube.o ./obj/main_Cluster.o ./obj/Silhouette.o, $(OBJS))
 OBJS_CUB=$(filter-out ./obj/main_LSH.o  ./obj/main_Cluster.o ./obj/Silhouette.o, $(OBJS))
-OBJS_CLS=$(filter-out ./obj/main_LSH.o  ./obj/main_Cube.o    ./obj/Silhouette.o, $(OBJS))
+OBJS_CLS=$(filter-out ./obj/main_LSH.o  ./obj/main_Cube.o, $(OBJS))
 
 OUT_LSH=./bin/lsh
 OUT_CUB=./bin/cube
