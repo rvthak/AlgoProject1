@@ -58,6 +58,7 @@ int main(int argc, char *argv[]){
 
 	unsigned cluster_count = args.k;
 	Silhouette silhouette(cluster_count, &cent, &ass_vecs);
+	vector<float> silhouette_report_array = silhouette.generate_report_array();
 
 	// CHRIS 12.11.21 END
 

@@ -16,6 +16,7 @@ Silhouette::Silhouette(unsigned cluster_count, CentroidArray* all_centroids, Ass
 Silhouette::~Silhouette()
 {
   delete this->all_centroids;
+  delete this->assignment_array;
 }
 
 Centroid* Silhouette::get_next_cluster_centroid(Centroid* centroid, VectorArray* centroids_array)
