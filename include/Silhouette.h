@@ -13,7 +13,7 @@ struct Silhouette
   vector<float> silhouette_array;         // An array of the silhouette results
   unsigned cluster_count;
 
-  Silhouette(unsigned cluster_count);
+  Silhouette(unsigned cluster_count, CentroidArray* all_centroids, AssignmentArray* assignment_array);
 	~Silhouette();
 
   Centroid* get_next_cluster_centroid(Centroid* centroid, VectorArray* centroids_array, AssignmentArray* assignment_array);
