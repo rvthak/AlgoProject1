@@ -77,10 +77,7 @@ VectorArray::~VectorArray(){ delete [] this->array; }
 
 // Add a vector in the given "index" of a VectorArray
 int VectorArray::add_vector(unsigned index, int id, vector<int> data){
-	cout << "Entered add_vector()" << endl;
-
-	if (this->array == nullptr) cout << "nullptr!!!!!" << endl;
-
+	
 	if( this->size < index ){ return 1; }
 
 	this->array[index].id = id;
