@@ -16,11 +16,7 @@ Silhouette::Silhouette(unsigned cluster_count, CentroidArray* all_centroids, Ass
   this->silhouette_array = vector<float>();
 }
 
-Silhouette::~Silhouette()
-{
-  delete this->all_centroids;
-  delete this->assignment_array;
-}
+Silhouette::~Silhouette() { }
 
 // We take a centroid and
 Centroid* Silhouette::get_next_cluster_centroid(Centroid* centroid)
@@ -48,7 +44,6 @@ Centroid* Silhouette::get_next_cluster_centroid(Centroid* centroid)
 VectorArray* Silhouette::get_vectors_in_cluster(Centroid* centroid)
 {
   VectorArray* current_cluster_vectors = new VectorArray(MAX_VECTORS_IN_CLUSTER);
-  unsigned current_cluster_vectors_index = 0;
 
   // Get the vectors for this cluster
   for (unsigned i = 0; i < centroid->assignments.size(); i++)
@@ -56,24 +51,6 @@ VectorArray* Silhouette::get_vectors_in_cluster(Centroid* centroid)
     Vector* vector = centroid->assignments[i];
     current_cluster_vectors->add_vector(i, vector->id, vector->vec);
   }
-
-  // for (unsigned i = 0; i < this->assignment_array->size; i++)
-  // {
-  //   Centroid* centroid_candidate = this->assignment_array->centroid[i];
-  //
-  //   // If this check passes, the vector in the assignment array is in the examined cluster
-  //   if (centroid_candidate == centroid)
-  //   {
-  //     Vector* vector = &this->assignment_array->array[i];
-  //
-  //     current_cluster_vectors->add_vector(current_cluster_vectors_index, vector->id, vector->vec);
-  //     current_cluster_vectors_index++;
-  //   }
-  //   else
-  //   {
-  //     continue;
-  //   }
-  // }
 
   return current_cluster_vectors;
 }
@@ -102,7 +79,6 @@ float Silhouette::get_average_distances_in_cluster(Centroid* centroid, VectorArr
 vector<float> Silhouette::generate_report_array()
 {
   unsigned silhouette_average_sum;
-  // float silhouette_average;
   float silhouette_average_total;
 
   for (unsigned i = 0; i < this->cluster_count; i++)
@@ -121,8 +97,6 @@ vector<float> Silhouette::generate_report_array()
 
 float Silhouette::generate_silhouette(Centroid* centroid)
 {
-  cout << "Entered generate_silhouette()" << endl;
-
   VectorArray* current_cluster_vectors;
   VectorArray* next_cluster_vectors;
   Centroid* next_cluster_centroid = this->get_next_cluster_centroid(centroid);
