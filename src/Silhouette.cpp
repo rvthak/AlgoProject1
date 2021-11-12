@@ -22,14 +22,14 @@ Silhouette::~Silhouette()
 // We take a centroid and
 Centroid* Silhouette::get_next_cluster_centroid(Centroid* centroid)
 {
-  Centroid* next_centroid = this->all_centroids->array[0];
-  double min_distance = centroid->l2(first_centroid);
+  Centroid* next_centroid = &this->all_centroids->array[0];
+  double min_distance = centroid->l2(&next_centroid->vec);
 
   // Add all the centroids to a shorted list so that we can retreive the next centroid
   for (unsigned i = 0; i < this->cluster_count; i++)
   {
-    Centroid* other_centroid = this->all_centroids->array[i];
-    double distance = centroid->l2(other_centroid);
+    Centroid* other_centroid = &this->all_centroids->array[i];
+    double distance = centroid->l2(&other_centroid->vec);
 
     if (distance < min_distance)
     {
@@ -44,7 +44,7 @@ Centroid* Silhouette::get_next_cluster_centroid(Centroid* centroid)
 // We use the AssignmentArray to find all the vectors in cluster if given the centroid
 VectorArray* Silhouette::get_vectors_in_cluster(Centroid* centroid)
 {
-  VectorArray* current_cluster_vectors;
+  VectorArray* current_cluster_vectors = new VectorArray();
   unsigned current_cluster_vectors_index = 0;
 
   // Get the vectors for this cluster
@@ -55,8 +55,8 @@ VectorArray* Silhouette::get_vectors_in_cluster(Centroid* centroid)
     // If this check passes, the vector in the assignment array is in the examined cluster
     if (centroid_candidate == centroid)
     {
-      Vector* vector = this->assignment_array->array[i];
-      double distance = this->assignment_array->dist[i];
+      Vector* vector = &this->assignment_array->array[i];
+      // double distance = this->assignment_array->dist[i];
 
       current_cluster_vectors->add_vector(current_cluster_vectors_index, vector->id, vector->vec);
       current_cluster_vectors_index++;
@@ -66,6 +66,8 @@ VectorArray* Silhouette::get_vectors_in_cluster(Centroid* centroid)
       continue;
     }
   }
+
+  return current_cluster_vectors;
 }
 
 // Get the average distance of all the vectors in a cluster to their centroid
@@ -92,12 +94,12 @@ float Silhouette::get_average_distances_in_cluster(Centroid* centroid, VectorArr
 vector<float> Silhouette::generate_report_array()
 {
   unsigned silhouette_average_sum;
-  float silhouette_average;
+  // float silhouette_average;
   float silhouette_average_total;
 
   for (unsigned i = 0; i < this->cluster_count; i++)
   {
-    Centroid* centroid = this->all_centroids->array[i];
+    Centroid* centroid = &this->all_centroids->array[i];
     float silhouette = this->generate_silhouette(centroid);
     silhouette_average_sum += silhouette;
     this->silhouette_array.push_back(silhouette);
@@ -114,7 +116,7 @@ float Silhouette::generate_silhouette(Centroid* centroid)
   // TODO : Get vectors of current cluster
   VectorArray* current_cluster_vectors;
   VectorArray* next_cluster_vectors;
-  Centroid* next_cluster_centroid = this->get_next_cluster_centroid(centroid, this->all_centroids);
+  Centroid* next_cluster_centroid = this->get_next_cluster_centroid(centroid);
 
   current_cluster_vectors = this->get_vectors_in_cluster(centroid);
   next_cluster_vectors = this->get_vectors_in_cluster(next_cluster_centroid);
