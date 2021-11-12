@@ -13,10 +13,10 @@ struct Silhouette
   vector<float> silhouette_array;         // An array of the silhouette results
   unsigned cluster_count;
 
-  Silhouette(unsigned cluster_count);
+  Silhouette(unsigned cluster_count, CentroidArray* all_centroids, AssignmentArray* assignment_array);
 	~Silhouette();
 
-  Centroid* get_next_cluster_centroid(Centroid* centroid, VectorArray* centroids_array, AssignmentArray* assignment_array);
+  Centroid* get_next_cluster_centroid(Centroid* centroid);
   VectorArray* get_vectors_in_cluster(Centroid* centroid);
   float get_average_distances_in_cluster(Centroid* centroid, VectorArray* cluster_vector_array);
   vector<float> generate_report_array();

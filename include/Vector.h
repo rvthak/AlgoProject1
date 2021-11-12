@@ -23,14 +23,20 @@ struct VectorArray{
 	unsigned size;	// The size of the Array == The amount of Vectors
 	Vector *array;	// The Vector Storage Array itself
 
+	// CHRIS 12.11.21
+	VectorArray(unsigned size);
+
 	VectorArray(std::string filename);
 	~VectorArray();
 
 	void *kNN_naive(Vector *query, unsigned k);
 	void print();	// Print all the Vectors of the Array
 
-private:
+	// CHRIS 12.11.21
 	int add_vector(unsigned index, int id, std::vector<int> data);
+
+private:
+	// int add_vector(unsigned index, int id, std::vector<int> data);
 	void parse_input(std::string filename);
 };
 
@@ -63,7 +69,7 @@ struct CentroidArray{
 
 	void reset_clusters();
 	int  get_index(Vector *vec);
-	bool changed();	
+	bool changed();
 	void print();
 };
 
@@ -85,8 +91,11 @@ struct AssignmentArray{
 	void assign(unsigned id, Centroid *centroid, double dist);
 	void print();	// Print all the Vector-Centroid-distance pairs
 
-private:
+	// CHRIS 12.11.21
 	int add_vector(unsigned index, int id, std::vector<int> data);
+
+private:
+	// int add_vector(unsigned index, int id, std::vector<int> data);
 	void parse_input(std::string filename);
 };
 

@@ -6,6 +6,7 @@
 #include "Vector.h"
 #include "hash_lsh.h"
 #include "hash_cube.h"
+#include "Silhouette.h"
 
 using namespace std;
 #define INITIAL_R 50
@@ -40,9 +41,9 @@ int main(int argc, char *argv[]){
 
 	// Create LSH/Cube structs if needed
 	MultiHash *lsh;
-	if( args.method == "LSH" ){ 
+	if( args.method == "LSH" ){
 		// Create the LSH Structs
-		lsh = new MultiHash(args.k_lsh, args.L, ass_vecs.size, (ass_vecs.array)[0].vec.size()); 
+		lsh = new MultiHash(args.k_lsh, args.L, ass_vecs.size, (ass_vecs.array)[0].vec.size());
 
 		// Load the input data into the structs
 		lsh->loadVectors(&ass_vecs);
@@ -56,8 +57,8 @@ int main(int argc, char *argv[]){
 
 		cout << " Assignment: " << endl;
 		// < Assignment Stage > : Assign each Vector to its nearest Centroid's Cluster
-		if( args.method == "Classic" ){ Classic_assignment(&ass_vecs, &cent); } 
-		else if( args.method == "LSH" ){ Lsh_assignment(&ass_vecs, lsh, &cent); } 
+		if( args.method == "Classic" ){ Classic_assignment(&ass_vecs, &cent); }
+		else if( args.method == "LSH" ){ Lsh_assignment(&ass_vecs, lsh, &cent); }
 		else { Cube_assignment(&ass_vecs, &cent, args.M, args.k_cube, args.probes); }
 
 		cout << " Update: " << endl;
@@ -66,6 +67,19 @@ int main(int argc, char *argv[]){
 	}
 
 	// Print Silhouette
+
+	// CHRIS 12.11.21 START
+
+	unsigned cluster_count = args.k;
+	Silhouette silhouette(cluster_count, &cent, &ass_vecs);
+	vector<float> silhouette_report_array = silhouette.generate_report_array();
+
+	for (int i=0; i < silhouette_report_array.size(); i++)
+	{
+		cout << silhouette_report_array[i] << endl;
+	}
+
+	// CHRIS 12.11.21 END
 
 	print_footer();
 	if( args.method == "LSH" ){ delete lsh; }
@@ -129,7 +143,7 @@ Centroid *exact_centroid(Vector *v, CentroidArray *cent, double *d){
 	// Set the first Centroid as the nearest for now
 	near = &((cent->array)[0]);
 	min_dist = v->l2( &(near->vec) );
-	
+
 	// For each remaining Centroid
 	for(unsigned i=1; i<(cent->size); i++){
 		// Calculate the Vector's exact distance
@@ -158,7 +172,7 @@ void reverse_range_lsh_assignment(AssignmentArray *ass_vecs, CentroidArray *cent
 		list = lsh->range_search( &((cent->array)[index].vec), R);
 
 		// Assign the found Vectors to this Centroid
-		assigned = assign_list(ass_vecs, cent, index, list); 
+		assigned = assign_list(ass_vecs, cent, index, list);
 
 		// Double the search range and search again
 		R*=2;
@@ -168,7 +182,7 @@ void reverse_range_lsh_assignment(AssignmentArray *ass_vecs, CentroidArray *cent
 
 // Assign the vectors of the list to the given Centroid
 // Resolves overlapping by finding the true nearest Centroid
-// Returns the amount of Vectors Successfully assigned 
+// Returns the amount of Vectors Successfully assigned
 unsigned assign_list(AssignmentArray *ass_vecs, CentroidArray *cent, unsigned index, List *list){
 	unsigned count=0;
 	List_node *cur = list->first;
@@ -191,7 +205,7 @@ unsigned assign_list(AssignmentArray *ass_vecs, CentroidArray *cent, unsigned in
 				(cent->array)[index].assign(cur->data);
 				ass_vecs->assign(cur->data->id, &((cent->array)[index]), (cent->array)[index].l2(cur->data) );
 			}
-			
+
 		}
 		// Else it is already assigned to this Cluster => Do nothing
 
