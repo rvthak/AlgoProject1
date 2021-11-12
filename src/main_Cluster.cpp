@@ -66,20 +66,9 @@ int main(int argc, char *argv[]){
 		ass_vecs.update_centroids(&cent);
 	}
 
-	// Print Silhouette
-
-	// CHRIS 12.11.21 START
-
 	unsigned cluster_count = args.k;
 	Silhouette silhouette(cluster_count, &cent, &ass_vecs);
 	vector<float> silhouette_report_array = silhouette.generate_report_array();
-
-	for (int i=0; i < silhouette_report_array.size(); i++)
-	{
-		cout << silhouette_report_array[i] << endl;
-	}
-
-	// CHRIS 12.11.21 END
 
 	print_footer();
 	if( args.method == "LSH" ){ delete lsh; }
