@@ -8,11 +8,15 @@
 #include "hash_cube.h"
 
 using namespace std;
+#define INITIAL_R 50
 
 Centroid *exact_centroid(Vector *v, CentroidArray *cent, double *d);
 void Classic_assignment(AssignmentArray *ass_vecs, CentroidArray *cent);
-void Lsh_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int L, int k);
+void Lsh_assignment(AssignmentArray *ass_vecs, MultiHash *lsh, CentroidArray *cent);
 void Cube_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int M, int k, int probes);
+
+void reverse_range_lsh_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, unsigned index, MultiHash *lsh);
+unsigned assign_list(AssignmentArray *ass_vecs, CentroidArray *cent, unsigned index, List *list);
 
 int main(int argc, char *argv[]){
 	print_header();
@@ -34,16 +38,26 @@ int main(int argc, char *argv[]){
 	cent.initialize_random(&ass_vecs);
 	//cent.print();
 
+	// Create LSH/Cube structs if needed
+	MultiHash *lsh;
+	if( args.method == "LSH" ){ 
+		// Create the LSH Structs
+		lsh = new MultiHash(args.k_lsh, args.L, ass_vecs.size, (ass_vecs.array)[0].vec.size()); 
+
+		// Load the input data into the structs
+		lsh->loadVectors(&ass_vecs);
+	}
+
 	// While there are assignment changes
 	while( cent.changed() ){
 
 		// Make sure the clusters are empty before starting the assignments
-		cent.reset_clusters();
+		cent.reset_clusters(); ass_vecs.reset_clusters();
 
 		cout << " Assignment: " << endl;
 		// < Assignment Stage > : Assign each Vector to its nearest Centroid's Cluster
 		if( args.method == "Classic" ){ Classic_assignment(&ass_vecs, &cent); } 
-		else if( args.method == "LSH" ){ Lsh_assignment(&ass_vecs, &cent, args.L, args.k_lsh); } 
+		else if( args.method == "LSH" ){ Lsh_assignment(&ass_vecs, lsh, &cent); } 
 		else { Cube_assignment(&ass_vecs, &cent, args.M, args.k_cube, args.probes); }
 
 		cout << " Update: " << endl;
@@ -54,6 +68,7 @@ int main(int argc, char *argv[]){
 	// Print Silhouette
 
 	print_footer();
+	if( args.method == "LSH" ){ delete lsh; }
 	return 0;
 }
 
@@ -64,44 +79,42 @@ int main(int argc, char *argv[]){
 // Assignment using exact approach => True Distances
 void Classic_assignment(AssignmentArray *ass_vecs, CentroidArray *cent){
 	double dist;
+	Centroid *c;
 
 	// For each Existing Vector
 	for(unsigned i=0; i<(ass_vecs->size); i++){
-		// Calculate the exact distances between the Vector and every Centroid 
-		// and return the true nearest Centroid
-		(ass_vecs->centroid)[i] = exact_centroid( &((ass_vecs->array)[i]), cent , &dist );
-		(ass_vecs->centroid)[i]->assign( &((ass_vecs->array)[i]) );
-		(ass_vecs->dist)[i] = dist;
+		// Find the true nearest Centroid by calculating the distances to all the centroids
+		c = exact_centroid( &((ass_vecs->array)[i]), cent , &dist );
+
+		// And make the needed assignments
+		c->assign( &((ass_vecs->array)[i]) );
+		ass_vecs->assign( (ass_vecs->array)[i].id, c, dist );
 		//cout << " Assigned: " << i << " to Centroid: " << (ass_vecs->centroid)[i] << endl;
 	}
 }
 
 // Assignment using LSH => Approximate Distance
-void Lsh_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int L, int k){
-	// ShortedList *lsh_results;
-	// int index;
+void Lsh_assignment(AssignmentArray *ass_vecs, MultiHash *lsh, CentroidArray *cent){
+	double dist;
+	Centroid *c;
 
-	// // Create the LSH Structs
-	// MultiHash lsh(k, L, (cent->size), (cent->array)[0].vec.vec.size());
-	
-	// // Load the input data into the structs
-	// lsh.loadVectors(cent);
+	// For each Centroid
+	for(unsigned i=0; i<(cent->size); i++){
+		// Get assigned the nearest Vectors using Reverse Range Search based on the lsh struct
+		reverse_range_lsh_assignment(ass_vecs, cent, i, lsh );
+	}
 
-	// // For each existing Vector
-	// for(unsigned i=0; i<(ass_vecs->size); i++){
-
-	// 	// Find its nearest Centroid-Neighbor
-	// 	lsh_results = lsh.kNN_lsh( &((ass_vecs->array)[i]), 1 ); 
-
-	// 	// Assign the Vector to its cluster
-	// 	index = cent->get_index( lsh_results->first->v );
-	// 	(cent->array)[index].assign( lsh_results->first->v );
-
-	// 	delete lsh_results;
-	// }
+	// Assign any Vectors left unassigned using the exact method
+	for(unsigned i=0; i<(ass_vecs->size); i++){
+		if( (ass_vecs->array)[i].centroid == nullptr ){
+			c = exact_centroid( &((ass_vecs->array)[i]), cent , &dist );
+			c->assign( &((ass_vecs->array)[i]) );
+			ass_vecs->assign( (ass_vecs->array)[i].id, c, dist );
+		}
+	}
 }
 
-// Assignment using Hypercube
+// Assignment using Hypercube => Approximate Distance
 void Cube_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int M, int k, int probes){
 
 }
@@ -134,5 +147,56 @@ Centroid *exact_centroid(Vector *v, CentroidArray *cent, double *d){
 
 //------------------------------------------------------------------------------------------------------------------
 
+// Reverse Range Search using lsh
+void reverse_range_lsh_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, unsigned index, MultiHash *lsh){
+	double R = INITIAL_R;
+	unsigned assigned=1;
+	List *list;
 
-// Silhouette Print
+	while(assigned){
+		// Search within a range for Vectors to assign to the cluster
+		list = lsh->range_search( &((cent->array)[index].vec), R);
+
+		// Assign the found Vectors to this Centroid
+		assigned = assign_list(ass_vecs, cent, index, list); 
+
+		// Double the search range and search again
+		R*=2;
+		delete list;
+	}
+}
+
+// Assign the vectors of the list to the given Centroid
+// Resolves overlapping by finding the true nearest Centroid
+// Returns the amount of Vectors Successfully assigned 
+unsigned assign_list(AssignmentArray *ass_vecs, CentroidArray *cent, unsigned index, List *list){
+	unsigned count=0;
+	List_node *cur = list->first;
+
+	// For each given Vector in the list
+	while( cur != nullptr ){
+
+		// If it is not assigned to any cluster
+		if( cur->data->centroid == nullptr ){
+
+			// Assign the Vector to this cluster
+			(cent->array)[index].assign(cur->data);
+			ass_vecs->assign(cur->data->id, &((cent->array)[index]), (cent->array)[index].l2(cur->data) );
+
+		}
+		// If it is already assigned to another Cluster
+		else if( cur->data->centroid != (&((cent->array)[index])) ){
+			// Compare the true distances between the two and assign to the best one
+			if( (cent->array)[index].l2(cur->data) < ((Centroid *)(cur->data->centroid))->l2(cur->data) ){
+				(cent->array)[index].assign(cur->data);
+				ass_vecs->assign(cur->data->id, &((cent->array)[index]), (cent->array)[index].l2(cur->data) );
+			}
+			
+		}
+		// Else it is already assigned to this Cluster => Do nothing
+
+		cur = cur->next;
+	}
+
+	return count;
+}

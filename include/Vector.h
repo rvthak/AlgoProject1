@@ -1,13 +1,16 @@
 #ifndef VECTOR
 #define VECTOR
 
+#include <map>
 #include <vector>
 #include <string>
+#include <iterator>
 
 // Vector Representation Struct
 struct Vector{
 	unsigned id;			// The Vector's Id
 	std::vector<int> vec;	// The Vector Itself
+	void *centroid;			// A pointer to the assigned Centroid when clustering (if any)
 
 	Vector();
 
@@ -56,6 +59,8 @@ struct CentroidArray{
 
 	void initialize_random(void *ass_vecs);
 	void initialize_plus_plus(void *ass_vecs);
+	void initialize_concentrate(void *ass_vecs);
+
 	void reset_clusters();
 	int  get_index(Vector *vec);
 	bool changed();	
@@ -68,14 +73,16 @@ struct CentroidArray{
 struct AssignmentArray{
 	unsigned size;			// The size of the Array == The amount of Vectors
 	Vector   *array;		// The Vector Storage Array itself
-	Centroid **centroid;	// An array that stores pointers to the corresponding Centroid for each Vector 
-	double   *dist;			// An array that stores the distance between the corresponding Vector and its Centroid
+
+	std::map<unsigned, Centroid *> centroid;	// Foreach Vector id -> Assigned Centroid
+	std::map<unsigned, double> dist;			// Foreach Vector id -> Distance to Assigned Centroid
 
 	AssignmentArray(std::string filename);
 	~AssignmentArray();
 
 	void update_centroids(CentroidArray *cent);
-
+	void reset_clusters();
+	void assign(unsigned id, Centroid *centroid, double dist);
 	void print();	// Print all the Vector-Centroid-distance pairs
 
 private:

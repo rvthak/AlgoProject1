@@ -89,11 +89,11 @@ vgext_cluster: $(OUT_CLS)
 
 #--------------------------------------------------------------------------
 
-run: cluster
+run: cluster_lsh
 
 vg: vg_cluster
 
-vgext: vgext_lsh
+vgext: vgext_cluster
 
 .PHONY: clean all run lsh cube cluster cluster_lsh cluster_cube vg vgext vg_lsh vgext_lsh vg_cube vgext_cube vg_cluster vgext_cluster
 

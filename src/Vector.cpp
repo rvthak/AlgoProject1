@@ -10,7 +10,7 @@
 
 using namespace std;
 
-Vector::Vector(){ this->id = 0; }
+Vector::Vector(){ this->id = 0; this->centroid = nullptr; }
 
 // Prints all the data stored in a Vector
 void Vector::print(){
@@ -171,6 +171,7 @@ void Centroid::copy_Vec(Vector *p){
 void Centroid::assign(Vector *p){
 	(this->assignments).push_back(p);
 	(this->cluster_size)++;
+	p->centroid = this;
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -211,6 +212,11 @@ void CentroidArray::initialize_plus_plus(void *ass_vecs){
 
 }
 
+// Attempt to select Centroids close to the dataset's center of mass
+void CentroidArray::initialize_concentrate(void *ass_vecs){
+
+}
+
 // Prints all the Centroids Stored
 void CentroidArray::print(){
 	for(unsigned i=0; i<(this->size); i++){
@@ -221,7 +227,7 @@ void CentroidArray::print(){
 
 // Resets all the assignments
 void CentroidArray::reset_clusters(){
-
+	// Reset all the Cluster Assignments
 	for(unsigned i=0; i<(this->size); i++){
 		(this->array)[i].cluster_size = 0;
 		(this->array)[i].assignments.clear();
@@ -258,34 +264,25 @@ AssignmentArray::AssignmentArray(std::string filename){
 		exit(1);
 	}
 
-	// Allocate memory to store the Centroid Pointers
-	this->centroid = new Centroid *[this->size];
-	if( this->centroid == nullptr ){
-		cout << "\033[31;1m (!) Fatal Error:\033[0m Memory  : " << filename << " : Failed to allocate memory for Centroid Pointers." << endl;
-		exit(1);
-	}
-
-	// Allocate memory to store the distances
-	this->dist = new double[this->size];
-	if( this->dist == nullptr ){
-		cout << "\033[31;1m (!) Fatal Error:\033[0m Memory  : " << filename << " : Failed to allocate memory for distances." << endl;
-		exit(1);
-	}
-
 	// Parse the file and store the records
 	this->parse_input(filename);
 
-	// Init the Centroid Pointers to NULL and the distances to zero
+	// Init the Centroid Pointers to NULL 
 	for(unsigned i=0; i<(this->size); i++){
-		(this->centroid)[i] = nullptr;
-		(this->dist)[i] = 0;
+		(this->centroid).insert({ (this->array)[i].id, nullptr });
+		(this->dist).insert({ (this->array)[i].id, 0 });
 	}
 }
 
 AssignmentArray::~AssignmentArray(){
 	delete [] this->array;
-	delete [] this->centroid;
-	delete [] this->dist;
+}
+
+
+// Store the Centroid and distance assigned to the Vector with the given id
+void AssignmentArray::assign(unsigned id, Centroid *centroid, double dist){
+	(this->centroid)[id] = centroid;
+	(this->dist)[id] = dist;
 }
 
 // Prints all the Vectors Stored in the AssignmentArray
@@ -296,6 +293,21 @@ void AssignmentArray::print(){
 		if( (this->centroid)[i] == nullptr ){ cout << " NULL " << endl; }
 		else{ (this->centroid)[i]->print(); }
 		cout << " Distance: " << (this->dist)[i] << endl << endl;
+	}
+}
+
+// Reset all the assignments made
+void AssignmentArray::reset_clusters(){
+
+	// Reset all the Vector pointer assignemts
+	for(unsigned i=0; i<(this->size); i++){
+		(this->array)[i].centroid = nullptr;
+	}
+
+	// Reset all the map Assignments
+	for(unsigned i=0; i<(this->size); i++){
+		(this->centroid)[i] = nullptr;
+		(this->dist)[i] = 0;
 	}
 }
 
