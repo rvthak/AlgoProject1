@@ -6,6 +6,7 @@
 #include "Vector.h"
 #include "hash_lsh.h"
 #include "hash_cube.h"
+#include "Silhouette.h"
 
 using namespace std;
 
@@ -42,8 +43,8 @@ int main(int argc, char *argv[]){
 
 		cout << " Assignment: " << endl;
 		// < Assignment Stage > : Assign each Vector to its nearest Centroid's Cluster
-		if( args.method == "Classic" ){ Classic_assignment(&ass_vecs, &cent); } 
-		else if( args.method == "LSH" ){ Lsh_assignment(&ass_vecs, &cent, args.L, args.k_lsh); } 
+		if( args.method == "Classic" ){ Classic_assignment(&ass_vecs, &cent); }
+		else if( args.method == "LSH" ){ Lsh_assignment(&ass_vecs, &cent, args.L, args.k_lsh); }
 		else { Cube_assignment(&ass_vecs, &cent, args.M, args.k_cube, args.probes); }
 
 		cout << " Update: " << endl;
@@ -52,6 +53,19 @@ int main(int argc, char *argv[]){
 	}
 
 	// Print Silhouette
+
+	// CHRIS 12.11.21 START
+
+	unsigned cluster_count = args.k;
+	Silhouette silhouette(cluster_count, &cent, &ass_vecs);
+	vector<float> silhouette_report_array = silhouette.generate_report_array();
+
+	for (int i=0; i < silhouette_report_array.size(); i++)
+	{
+		cout << silhouette_report_array[i] << endl;
+	}
+
+	// CHRIS 12.11.21 END
 
 	print_footer();
 	return 0;
@@ -67,7 +81,7 @@ void Classic_assignment(AssignmentArray *ass_vecs, CentroidArray *cent){
 
 	// For each Existing Vector
 	for(unsigned i=0; i<(ass_vecs->size); i++){
-		// Calculate the exact distances between the Vector and every Centroid 
+		// Calculate the exact distances between the Vector and every Centroid
 		// and return the true nearest Centroid
 		(ass_vecs->centroid)[i] = exact_centroid( &((ass_vecs->array)[i]), cent , &dist );
 		(ass_vecs->centroid)[i]->assign( &((ass_vecs->array)[i]) );
@@ -83,7 +97,7 @@ void Lsh_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int L, int k
 
 	// // Create the LSH Structs
 	// MultiHash lsh(k, L, (cent->size), (cent->array)[0].vec.vec.size());
-	
+
 	// // Load the input data into the structs
 	// lsh.loadVectors(cent);
 
@@ -91,7 +105,7 @@ void Lsh_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int L, int k
 	// for(unsigned i=0; i<(ass_vecs->size); i++){
 
 	// 	// Find its nearest Centroid-Neighbor
-	// 	lsh_results = lsh.kNN_lsh( &((ass_vecs->array)[i]), 1 ); 
+	// 	lsh_results = lsh.kNN_lsh( &((ass_vecs->array)[i]), 1 );
 
 	// 	// Assign the Vector to its cluster
 	// 	index = cent->get_index( lsh_results->first->v );
@@ -116,7 +130,7 @@ Centroid *exact_centroid(Vector *v, CentroidArray *cent, double *d){
 	// Set the first Centroid as the nearest for now
 	near = &((cent->array)[0]);
 	min_dist = v->l2( &(near->vec) );
-	
+
 	// For each remaining Centroid
 	for(unsigned i=1; i<(cent->size); i++){
 		// Calculate the Vector's exact distance

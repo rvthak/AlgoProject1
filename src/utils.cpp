@@ -141,6 +141,9 @@ int hamming_distance(int a, int b)
 	return distance;
 }
 
+
+// We get a bit array and we convert it to it's decimal value
+// f.e. { 0, 1, 1, 0, 1 } == 20
 int convert_bit_array_to_decimal(std::vector<int> bit_array)
 {
   int decimal;
@@ -156,6 +159,7 @@ int convert_bit_array_to_decimal(std::vector<int> bit_array)
   return decimal;
 }
 
+// When we get a hash key from an H hash function, we generate a bit
 int generate_bit_from_h_key(int h_key)
 {
 	int bit = (h_key % 2 == 0) ? 1 : 0;
@@ -192,4 +196,3 @@ std::vector<int> div_vector(std::vector<int> *x, unsigned d){
 	}
 	return div;
 }
-

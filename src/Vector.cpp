@@ -34,12 +34,28 @@ double Vector::l2(Vector *p){
 
 //------------------------------------------------------------------------------------------------------------------
 
+// CHRIS 12.11.21 START
+
+VectorArray::VectorArray(unsigned size)
+{
+	this->size = size;
+
+	// Allocate memory to store the file records
+	this->array = new Vector[this->size];
+	if( this->array == nullptr ){
+		cout << "\033[31;1m (!) Fatal Error:\033[0m Memory <<  Failed to allocate memory for file records." << endl;
+		exit(1);
+	}
+}
+
+// CHRIS 12.11.21 END
+
 // Create a VectorArray containing the given file contents
 VectorArray::VectorArray(string filename){
 
 	// Get the total amount of records in the target file
 	this->size = getFileLines(filename);
-	if( this->size == 0 ){ 
+	if( this->size == 0 ){
 		cout << "\033[31;1m (!) Fatal Error:\033[0m Input Parsing : " << filename << " : File empty." << endl;
 		exit(1);
 	}
@@ -61,7 +77,7 @@ VectorArray::~VectorArray(){ delete [] this->array; }
 
 // Add a vector in the given "index" of a VectorArray
 int VectorArray::add_vector(unsigned index, int id, vector<int> data){
-
+	
 	if( this->size < index ){ return 1; }
 
 	this->array[index].id = id;
@@ -82,13 +98,13 @@ void VectorArray::print(){
 void VectorArray::parse_input(string filename){
 
 	// Amount of Integers per Vector (Does not count the Vector id)
-	unsigned vec_length = getFileLineLength(filename)-1; 
+	unsigned vec_length = getFileLineLength(filename)-1;
 
 	// Open the file as an ifstream
 	ifstream file(filename);
 	string line;
 
-	unsigned vecs_loaded=0; // Counts the already parsed vectors 
+	unsigned vecs_loaded=0; // Counts the already parsed vectors
 	int val, id=-1;
 	vector<int> tmp_vec;
 
@@ -118,14 +134,14 @@ void VectorArray::parse_input(string filename){
 		tmp_vec.clear(); id=-1;
 
 		// This line's Vector was loaded successfully
-		vecs_loaded++; 
+		vecs_loaded++;
 	}
 }
 
 // Naive search for the k Nearest Neighbors of the given query Vector
 void *VectorArray::kNN_naive(Vector *query, unsigned k){
 
-	// The naive approach to solving the k Nearest Neighbors problem is 
+	// The naive approach to solving the k Nearest Neighbors problem is
 	// to just check all the distances and keep the shortest ones
 
 	// We just add all the existing Vectors and their distances into a Shorted List
@@ -152,7 +168,7 @@ double Centroid::l2(Vector *p){
 	double sum=0;
 
 	for(long unsigned i=0; i<(p->vec).size(); i++){
-		tmp = (this->vec.vec)[i] - (p->vec)[i]; 
+		tmp = (this->vec.vec)[i] - (p->vec)[i];
 		sum += tmp * tmp;
 	}
 	return sqrt(sum);
@@ -189,7 +205,7 @@ void CentroidArray::initialize_random(void *ass_vecs){
 	std::vector<int> assigned_indexes;
 	unsigned random_index;
 
-	// Get a random Vector for each Centroid 
+	// Get a random Vector for each Centroid
 	for(unsigned i=0; i<(this->size); i++){
 
 		do{
@@ -197,10 +213,10 @@ void CentroidArray::initialize_random(void *ass_vecs){
 			random_index = rand()%(this->size);
 		// Ensure that it hasn't already been selected as a Centroid
 		}while( find(assigned_indexes.begin(), assigned_indexes.end(), random_index) != assigned_indexes.end() );
-		
+
 		// Assign the Centroid
 		(this->array)[i].copy_Vec( &((((AssignmentArray *)ass_vecs)->array)[random_index]) );
-		
+
 		// Add the Assigned Vector Index to a vector to avoid douplicate assignments
 		assigned_indexes.push_back(random_index);
 	}
@@ -246,7 +262,7 @@ AssignmentArray::AssignmentArray(std::string filename){
 
 	// Get the total amount of records in the target file
 	this->size = getFileLines(filename);
-	if( this->size == 0 ){ 
+	if( this->size == 0 ){
 		cout << "\033[31;1m (!) Fatal Error:\033[0m Input Parsing : " << filename << " : File empty." << endl;
 		exit(1);
 	}
@@ -311,13 +327,13 @@ int AssignmentArray::add_vector(unsigned index, int id, vector<int> data){
 void AssignmentArray::parse_input(string filename){
 
 	// Amount of Integers per Vector (Does not count the Vector id)
-	unsigned vec_length = getFileLineLength(filename)-1; 
+	unsigned vec_length = getFileLineLength(filename)-1;
 
 	// Open the file as an ifstream
 	ifstream file(filename);
 	string line;
 
-	unsigned vecs_loaded=0; // Counts the already parsed vectors 
+	unsigned vecs_loaded=0; // Counts the already parsed vectors
 	int val, id=-1;
 	vector<int> tmp_vec;
 
@@ -347,7 +363,7 @@ void AssignmentArray::parse_input(string filename){
 		tmp_vec.clear(); id=-1;
 
 		// This line's Vector was loaded successfully
-		vecs_loaded++; 
+		vecs_loaded++;
 	}
 }
 
@@ -376,7 +392,7 @@ void AssignmentArray::update_centroids(CentroidArray *cent){
 		}
 		// And assign the new Cluster Centroid
 		(cent->array)[i].vec.vec = div_vector(&mean, (cent->array)[i].assignments.size() );
-	
+
 		// If any centroid changes => update "changed" flag
 		if( !(prev == (cent->array)[i].vec.vec) ){ cent->change = true; }
 		//cout << " Updated: " << i << endl;
