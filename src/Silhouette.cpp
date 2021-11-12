@@ -4,7 +4,7 @@
 #include <vector>
 #include <iostream>
 
-#define MAX_VECTORS_IN_CLUSTER 100000
+#define MAX_VECTORS_IN_CLUSTER 10000
 
 using namespace std;
 
@@ -57,18 +57,18 @@ VectorArray* Silhouette::get_vectors_in_cluster(Centroid* centroid)
   // Get the vectors for this cluster
   for (unsigned i = 0; i < this->assignment_array->size; i++)
   {
-    cout << "Iteration #" << i << endl;
+    // cout << "Iteration #" << i << endl;
 
     Centroid* centroid_candidate = this->assignment_array->centroid[i];
 
     // If this check passes, the vector in the assignment array is in the examined cluster
     if (centroid_candidate == centroid)
     {
-      cout << "Found the centroid in the assignment_array!" << endl;
+      // cout << "Found the centroid in the assignment_array!" << endl;
 
       Vector* vector = &this->assignment_array->array[i];
 
-      cout << "Got vector from assignment_array!" << endl;
+      // cout << "Got vector from assignment_array!" << endl;
       // double distance = this->assignment_array->dist[i];
 
       // cout << "Values to add :" << endl;
@@ -79,7 +79,7 @@ VectorArray* Silhouette::get_vectors_in_cluster(Centroid* centroid)
 
       current_cluster_vectors->add_vector(current_cluster_vectors_index, vector->id, vector->vec);
 
-      cout << "Added vector to current_cluster_vectors!" << endl;
+      // cout << "Added vector to current_cluster_vectors!" << endl;
 
       current_cluster_vectors_index++;
     }
@@ -101,7 +101,7 @@ float Silhouette::get_average_distances_in_cluster(Centroid* centroid, VectorArr
   float average_distance;
   unsigned counter = 0;
 
-  while (&cluster_vector_array->array[counter] != nullptr)
+  while ((&cluster_vector_array->array != nullptr) && (counter < cluster_vector_array->size))
   {
     Vector* vector = &cluster_vector_array->array[counter];
     double distance = centroid->l2(vector);
