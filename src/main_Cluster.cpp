@@ -97,49 +97,6 @@ int main(int argc, char *argv[]){
 
 //------------------------------------------------------------------------------------------------------------------
 
-void report_results(std::string filename, string algorithm,
-	 									vector<float> silhouette_results, CentroidArray* all_centroids,
-										bool complete_results)
-{
-	std::ofstream file;
-
- 	// Open the output file in append mode
-	file.open(filename, std::ios_base::app);
-
-	file << "Algorithm: " << algorithm << std::endl;
-
-	for (unsigned i = 0; i < all_centroids->size; i++)
-	{
-		file << "CLUSTER-" << i << " { size : "
-		 		 << &all_centroids->array[i].cluster_size << ", centroid: "
-				 << &all_centroids->array[i].print() << std::endl;
-	}
-
-	file << "Silhouette: [ ";
-
-	for (unsigned k = 0; k < silhouette_results.size(); k++)
-	{
-		file << silhouette_results[k] << ", " << std::endl;
-	}
-
-	file << "]" << endl;
-
-	if (complete_results == true)
-	{
-		for (unsigned i = 0; i < all_centroids->size; i++)
-		{
-			file << "CLUSTER-" << i << " { centroid : ";
-
-			for (unsigned k = 0; k < &all_centroids->array[i]->cluster_size; k++)
-			{
-				file << &(all_centroids->array[i])->assignments[k]->id << ", ";
-			}
-
-			file << "}" << std::endl;
-		}
-	}
-}
-
 // < Assignment > : Assign each Vector to its nearest Centroid's Cluster
 
 // Assignment using exact approach => True Distances
@@ -265,4 +222,52 @@ unsigned assign_list(AssignmentArray *ass_vecs, CentroidArray *cent, unsigned in
 	}
 
 	return count;
+}
+
+
+//------------------------------------------------------------------------------------------------------------------
+
+void report_results(std::string filename, string algorithm,
+	 									vector<float> silhouette_results, CentroidArray* all_centroids,
+										bool complete_results)
+{
+	std::ofstream file;
+
+ 	// Open the output file in append mode
+	file.open(filename, std::ios_base::app);
+
+	file << "Algorithm: " << algorithm << std::endl;
+
+	for (unsigned i = 0; i < (all_centroids->size); i++){
+
+		file << "CLUSTER-" << i << " { size : "
+		     << (all_centroids->array)[i].cluster_size << ", centroid: ";
+
+		for(int val: (all_centroids->array)[i].vec.vec ){
+			file << val << ' ';
+		}
+		file << std::endl;
+	}
+
+	file << "Silhouette: [ " << silhouette_results[0];
+
+	for (unsigned k = 1; k < silhouette_results.size(); k++){
+		file << ", " << silhouette_results[k] ;
+	}
+	file << "]" << endl << endl;
+
+	if (complete_results == true){
+
+		for (unsigned i = 0; i < all_centroids->size; i++)
+		{
+			file << "CLUSTER-" << i << " { centroid : ";
+
+			for (unsigned k = 0; k < (all_centroids->array)[i].cluster_size; k++)
+			{
+				file << (all_centroids->array)[i].assignments[k]->id << ", ";
+			}
+
+			file << "}" << std::endl;
+		}
+	}
 }

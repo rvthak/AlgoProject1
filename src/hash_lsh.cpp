@@ -56,6 +56,7 @@ double HashTable::averageBucketSize(){
 
 // Allocate L hash tables, and set their hash functions to use k "h" sub-hash-functions
 MultiHash::MultiHash(int k, int L, unsigned tableSize, unsigned v_size){
+	//std::cout << " Creating Multihash > k: " << k << ", L: " << L << ", TableSize: " << tableSize << ", VectorSize: " << v_size << std::endl;
 	// Allocate the Hash tables
 	if( (this->array = new HashTable*[L]) == nullptr ){ 
 		std::cout << "\033[31;1m (!) Fatal Error:\033[0m MultiHash Built : Failed to allocate memory." << std::endl;
@@ -68,7 +69,6 @@ MultiHash::MultiHash(int k, int L, unsigned tableSize, unsigned v_size){
 		}
 	}
 	this->amount = L;
-	std::cout << " Created Multihash > k: " << k << ", L: " << L << ", TableSize: " << tableSize << ", VectorSize: " << v_size << std::endl;
 }
 
 MultiHash::~MultiHash(){
@@ -108,13 +108,15 @@ void MultiHash::loadVectors(AssignmentArray *arr){
 ShortedList *MultiHash::kNN_lsh(Vector *query, unsigned k){
 	unsigned long key;
 	unsigned long ID;
+	unsigned id_matches=0;
 	Bucket *bucket;
 	ShortedList *list = new ShortedList(k);
 
-	//std::cout << " > Query id: " << query->id << std::endl;
+	std::cout << " > Query id: " << query->id << std::endl;
 	// For each existing Hash Table
 	for(unsigned i=0; i<(this->amount); i++){
 		//std::cout << "\tSearching HT[" << i+1 << "]" << std::endl;
+		id_matches=0;
 
 		// Calculate the ID of the query vector
 		ID = ((this->array)[i])->g->ID(query);
@@ -127,16 +129,22 @@ ShortedList *MultiHash::kNN_lsh(Vector *query, unsigned k){
 		Bucket_node *cur = bucket->first;
 		while( cur != nullptr ){
 
-			//std::cout << " checking id" << std::endl;
-
 			// Only check Vectors with the same ID to avoid computing unnecessary distances
 			if( cur->ID == ID ){
-				std::cout << " Adding" << std::endl;
-			}
+				//std::cout << " Id found" << std::endl;
 				list->add( cur->data, query->l2(cur->data));
-			
-
+				id_matches++;
+			}
 			cur = cur->next;
+		}
+
+		// In case we fail to find enough ID matches, just ignore the IDs
+		if( id_matches > k ){
+			cur = bucket->first;
+			while( cur != nullptr ){
+				list->add( cur->data, query->l2(cur->data));
+				cur = cur->next;
+			}
 		}
 	}
 	return list;
@@ -163,15 +171,15 @@ List *MultiHash::range_search(Vector *query, double R){
 		// Check the bucket and store only the nearest Vectors
 		Bucket_node *cur = bucket->first;
 		while( cur != nullptr ){
-
-			if( (dist = query->l2(cur->data)) <= R ){
-				list->add( cur->data);
+			if( cur->ID == ID ){
+				if( (dist = query->l2(cur->data)) <= R ){
+					list->add( cur->data);
+				}
 			}
-
 			cur = cur->next;
 		}
 	}
-
+	
 	return list;
 }
 

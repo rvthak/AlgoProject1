@@ -46,7 +46,7 @@ bool fileExists(string name){
 
 // Get a binary answer to the given question
 bool question(string q){
-	cout << "\033[36;1m (?) Question : \033[0m" << q << " : (y/n)" << endl;
+	cout << "\033[36;1m (?) Question : \033[0m" << q << " : \033[33;1m(y/n)\033[0m" << endl;
 
 	string str;
 	while(1){
@@ -56,7 +56,7 @@ bool question(string q){
 		if (cin.fail()){
 			cin.clear();
 			cin.ignore(numeric_limits<streamsize>::max(), '\n');
-			cout << "\033[36;1m (?) Invalid input :\033[0m Try again : (y/n)" << endl;
+			cout << "\033[36;1m (?) Invalid input :\033[0m Try again : \033[33;1m(y/n)\033[0m" << endl;
 		}
 		else if(str=="y"){
 			cin.get();
@@ -67,16 +67,16 @@ bool question(string q){
 			return false;
 		}
 		else{
-			cout << "\033[36;1m (?) Invalid input :\033[0m Try again : (y/n)" << endl;
+			cout << "\033[36;1m (?) Invalid input :\033[0m Try again : \033[33;1m(y/n)\033[0m" << endl;
 		}
 	}
 }
 
 // Modulo : Always positive
-unsigned long mod(double x, double y){
+unsigned mod(unsigned x, unsigned y){
 	if( x<0 ){ x*=(-1); }
 	if( y<0 ){ y*=(-1); }
-	return (unsigned long)std::fmod(x,y);
+	return x%y;
 }
 
 // Open the given if (if it exists) and clear all of its existing contents
@@ -122,8 +122,13 @@ void print_avg_divergence(double div){
 }
 
 // Print the total time
-void print_time(double time){
-	std::cout << "\033[33;1m (i) Total Execution Time: \033[0m" << time << " sec" << std::endl << std::endl;
+void print_total_time(double time){
+	std::cout << "\033[33;1m (i) Total Execution Time: \033[0m" << time << " \033[33;1msec\033[0m" << std::endl << std::endl;
+}
+
+// Print the Amount of time to create the structs and load the data
+void print_structs_created(double time){
+	std::cout << "\033[36;1m (T) \033[33;1mLoading Completed: \033[0m" << time << " \033[33;1msec\033[0m" << std::endl << std::endl;
 }
 
 // Calculates the hamming distance between two given integers
@@ -168,13 +173,9 @@ int generate_bit_from_h_key(int h_key)
 
 // Calculate the dot product between the two given vectors
 double dot_product(std::vector<int> x, std::vector<double> y){
-	if( x.size() != y.size() ){ return 0; }
-
-	unsigned size = x.size();
 	double sum = 0;
-
-	for(unsigned i=0; i<size; i++){
-		sum += (double)(x[i]) * y[i];
+	for(unsigned i=0; i<(x.size()); i++){
+		sum += x[i] * y[i];
 	}
 	return sum;
 }

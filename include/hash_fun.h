@@ -21,7 +21,7 @@ struct G{
 
 	// We create both ri and hi randomly on struct init, so we need to store them
 	unsigned *r;	// The "ri" values
-	H **h;	// The "hi" functions
+	H **h;			// The "hi" functions
 
 	G(int k, unsigned tableSize, unsigned v_size);
 	~G();

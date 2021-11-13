@@ -7,9 +7,9 @@
 #include <iostream>
 #include <functional>
 
-#define M_VALUE 4294967291UL
-#define W_VALUE  6 // in [2,6] but increase further for range queries with large R
-#define MAX_32_INT 2147483647
+#define M_VALUE 1800164
+#define W_VALUE 9 // in [2,6] but increase further for range queries with large R
+#define MAX_R 6
 
 H::H(unsigned v_size){
 	this->t = uniform_distribution(0, W_VALUE-1);
@@ -31,13 +31,18 @@ G::G(int k, unsigned tableSize, unsigned v_size){
 	this->k = k;
 	this->tableSize = tableSize;
 
+	//std::cout << " Created G containing: " << std::endl;
+
 	// Generate uniform random values for k "r"s
 	this->r = new unsigned[k];
 	if( this->r == nullptr ){
 		std::cout << "\033[31;1m (!) Fatal Error:\033[0m Memory : Failed to allocate memory for 'r' values." << std::endl;
 		exit(1);
 	}
-	for(int i=0; i<k; i++){ (this->r)[i] = uniform_distribution(1, MAX_32_INT); }
+	for(int i=0; i<k; i++){ 
+		(this->r)[i] = uniform_distribution(1, MAX_R); 
+		//std::cout << " r[" << i << "] = " << (this->r)[i] << std::endl;
+	}
 
 	// Generate k random "h" functions
 	if( (this->h = new H*[k]) == nullptr ){
@@ -70,7 +75,7 @@ unsigned long G::hash(Vector *p){
 unsigned long G::ID(Vector *p){
 	double sum=0;
 	for(unsigned i=0; i<(this->k); i++){
-		sum += mod( (double)(this->r)[i] * (double)(this->h)[i]->hash(p) , this->M );
+		sum += (this->r)[i] * ((this->h)[i]->hash(p));
 	}
 	return mod(sum, this->M);
 }

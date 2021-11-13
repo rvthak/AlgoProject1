@@ -19,7 +19,7 @@ OUT_LSH=./bin/lsh
 OUT_CUB=./bin/cube
 OUT_CLS=./bin/cluster
 
-RUNFLAGS_LSH=-o lsh_out.txt  -k 4 -L 6 -N 6 -R 450            -i $(INPUT_FILE) -q $(QUERY_FILE)
+RUNFLAGS_LSH=-o lsh_out.txt  -k 5 -L 3 -N 6 -R 450            -i $(INPUT_FILE) -q $(QUERY_FILE)
 RUNFLAGS_CUB=-o cube_out.txt -k 5 -M 10 -N 6 -R 450 -probes 3 -i $(INPUT_FILE) -q $(QUERY_FILE)
 
 RUNFLAGS_CLS_CLAS=-o cluster_out_classic.txt -m Classic   -complete -i $(INPUT_FILE) -c $(CONFIG_FILE)
