@@ -10,6 +10,7 @@ SL_Node::SL_Node(Vector *v, double dist){
 }
 
 void SL_Node::print(){
+
 	std::cout << " Id: " << this->v->id << ", Distance: " << this->dist << std::endl;
 }
 
@@ -40,6 +41,7 @@ int ShortedList::add(Vector *v, double dist){
 		this->first = new SL_Node(v, dist);
 		this->last = this->first;
 		(this->cur_len)++;
+		//std::cout << " Empty => New First " << std::endl;
 		return 0;
 	}
 
@@ -49,25 +51,29 @@ int ShortedList::add(Vector *v, double dist){
 		// If the last item is smaller than the new one
 		if( this->last->dist < dist ){
 			// No point in storing the new Vector, it is not a part of the top 'k'
+			//std::cout << " 1.Larger than last " << std::endl;
 			return 1;
 		}
 
 		// If the Vector is already in the List, dont add it again
+		//std::cout << " 1.Existence Check " << std::endl;
 		if( this->exists(v, dist) ){ return 1; }
 
 		// The new Vector is one of the top 'k' =>
 		// Remove the largest Vector (the last one) to free up space
 		this->delete_last();
+		//std::cout << " 1.Deleted last " << std::endl;
 	}
 	else{ // The list is not full
 		// If the Vector is already in the List, dont add it again
 		if( this->exists(v, dist) ){ return 1; }
+		//std::cout << " 2.Existence Check " << std::endl;
 	}
 
 	// Add the New Vector in the correct location
 
 	// Find the correct location
-	SL_Node *cur = this->first, *prev;
+	SL_Node *cur = this->first, *prev, *tmp;
 	while( (cur!=nullptr) && (cur->dist < dist) ){
 		prev = cur;
 		cur = cur->next;
@@ -75,24 +81,32 @@ int ShortedList::add(Vector *v, double dist){
 
 	// Add it and link accordingly
 	if( cur == this->first ){	// New first item
-		this->first = new SL_Node(v, dist);
 
-		// CHRIS CHANGE
-		if (this->max_len == 1) return 0;
-
-		this->first->next = cur;
-		this->first->next->prev = this->first;
+		// In case we have a Shorted list with max_size == 1
+		if( this->first == nullptr ){
+			this->first = new SL_Node(v, dist);
+			this->last = this->first;
+		}
+		else{
+			tmp = this->first; 
+			this->first = new SL_Node(v, dist);
+			this->first->next = tmp;
+			tmp->prev = this->first;
+		}
+		//std::cout << " New First " << std::endl;
 	}
 	else if( cur == nullptr ){	// New last item
 		this->last = new SL_Node(v, dist);
 		this->last->prev = prev;
 		prev->next = this->last;
+		//std::cout << " New Last " << std::endl;
 	}
 	else{	// New item in between
 		prev->next = new SL_Node(v, dist);
 		prev->next->prev = prev;
 		prev->next->next = cur;
 		cur->prev = prev->next;
+		//std::cout << " New between " << std::endl;
 	}
 	(this->cur_len)++;
 
@@ -117,39 +131,29 @@ bool ShortedList::exists(Vector *v, double dist){
 
 // Remove the current last item from the list
 void ShortedList::delete_last(){
-	if(this->cur_len == 1){
+	(this->cur_len)--;
+
+	if(this->cur_len == 0){
 		delete this->first;
 		this->first = nullptr;
 		this->last = nullptr;
-		this->cur_len = 0;
 	}
-
-	SL_Node *tmp;
-
-	// CHRIS CHANGE
-	if (this->max_len == 1)
-	{
-		if (this->last == nullptr) return;
-		delete this->last;
-		return;
-	}
-	else
-	{
+	else{
+		SL_Node *tmp;
 		tmp = this->last->prev;
-
-		std::cout << "TMP is the previous of the last element!" << std::endl;
+		tmp->next = nullptr;
 		delete this->last;
 		this->last = tmp;
-		tmp->next = nullptr;
-		(this->cur_len)--;
 	}
 }
 
 // Print the shorted list
 void ShortedList::print(){
-	std::cout << std::endl << " (i) Printing Shorted List: " << std::endl;
+	std::cout << std::endl << " (i) Printing Shorted List: ";
+	std::cout << "  Cur Length: " << this-> cur_len << ", Max Length:" << this->max_len << std::endl;
 
 	SL_Node *cur = this->first;
+
 	while( cur != nullptr ){
 		cur->print();
 		cur = cur->next;
