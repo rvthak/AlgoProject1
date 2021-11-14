@@ -10,14 +10,17 @@
 using namespace std;
 #define INITIAL_R 100
 
+//------------------------------------------------------------------------------------------------------------------
+
 Centroid *exact_centroid(Vector *v, CentroidArray *cent, double *d);
 Centroid *second_centroid(Vector *v, CentroidArray *cent, double *d, Centroid *assigned);
 
 void Classic_assignment(AssignmentArray *ass_vecs, CentroidArray *cent);
 void Lsh_assignment(AssignmentArray *ass_vecs, MultiHash *lsh, CentroidArray *cent);
-void Cube_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int M, int k, int probes);
+void Cube_assignment(AssignmentArray *ass_vecs, Hypercube *cube, CentroidArray *cent);
 
 void reverse_range_lsh_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, unsigned index, MultiHash *lsh);
+void reverse_range_cube_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, unsigned index, Hypercube *cube);
 unsigned assign_list(AssignmentArray *ass_vecs, CentroidArray *cent, unsigned index, List *list);
 
 std::vector<double> get_sihlouette(CentroidArray *cent);
@@ -25,6 +28,8 @@ double avg_cluster_distance(Vector *p, Centroid *c, int index);
 
 void report_results(std::string filename, string algorithm, bool complete,
 	 				vector<double> silhouette_results, CentroidArray* all_centroids);
+
+//------------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char *argv[]){
 	print_header();
@@ -52,13 +57,21 @@ int main(int argc, char *argv[]){
 	std::cout << "\033[36;1m (T) \033[33;1mCompleted in: \033[0m" << t.toc() << " \033[33;1msec\033[0m" << std::endl << std::endl;
 
 	// Create LSH/Cube structs if needed
-	MultiHash *lsh;
+	MultiHash *lsh; Hypercube *cube;
 	if( args.method == "LSH" ){
 		// Create the LSH Structs
 		lsh = new MultiHash(args.k_lsh, args.L, ass_vecs.size, (ass_vecs.array)[0].vec.size());
 
 		// Load the input data into the structs
 		lsh->loadVectors(&ass_vecs);
+	}
+	else if( args.method == "Hypercube" ){
+		// Create and intit the Cube Structs
+		cube = new Hypercube(args.k_cube, ass_vecs.size, (ass_vecs.array)[0].vec.size());
+		cube->set_search_limits(args.probes, args.M, 0);
+
+		// Load the input data into the structs
+		cube->loadVectors(&ass_vecs);
 	}
 
 	std::cout << "\033[36;1m (I)\033[33;1m Running Lloyds... " << std::endl;  t.tic();
@@ -80,7 +93,7 @@ int main(int argc, char *argv[]){
 		}
 		else {
 			algorithm = "Hypercube Range Search";
-			Cube_assignment(&ass_vecs, &cent, args.M, args.k_cube, args.probes);
+			Cube_assignment(&ass_vecs, cube, &cent);
 		}
 
 		// cout << " Update: " << endl;
@@ -98,6 +111,7 @@ int main(int argc, char *argv[]){
 
 	print_footer();
 	if( args.method == "LSH" ){ delete lsh; }
+	if( args.method == "Hypercube" ){ delete cube; }
 	return 0;
 }
 
@@ -144,8 +158,24 @@ void Lsh_assignment(AssignmentArray *ass_vecs, MultiHash *lsh, CentroidArray *ce
 }
 
 // Assignment using Hypercube => Approximate Distance
-void Cube_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int M, int k, int probes){
+void Cube_assignment(AssignmentArray *ass_vecs, Hypercube *cube, CentroidArray *cent){
+	double dist;
+	Centroid *c;
 
+	// For each Centroid
+	for(unsigned i=0; i<(cent->size); i++){
+		// Get assigned the nearest Vectors using Reverse Range Search based on the lsh struct
+		reverse_range_cube_assignment(ass_vecs, cent, i, cube );
+	}
+
+	// Assign any Vectors left unassigned using the exact method
+	for(unsigned i=0; i<(ass_vecs->size); i++){
+		if( (ass_vecs->array)[i].centroid == nullptr ){
+			c = exact_centroid( &((ass_vecs->array)[i]), cent , &dist );
+			c->assign( &((ass_vecs->array)[i]) );
+			ass_vecs->assign( (ass_vecs->array)[i].id, c, dist );
+		}
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -219,6 +249,25 @@ void reverse_range_lsh_assignment(AssignmentArray *ass_vecs, CentroidArray *cent
 	while(assigned){
 		// Search within a range for Vectors to assign to the cluster
 		list = lsh->range_search( &((cent->array)[index].vec), R);
+
+		// Assign the found Vectors to this Centroid
+		assigned = assign_list(ass_vecs, cent, index, list);
+
+		// Double the search range and search again
+		R*=2;
+		delete list;
+	}
+}
+
+// Reverse Range Search using Hypercube
+void reverse_range_cube_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, unsigned index, Hypercube *cube){
+	double R = INITIAL_R;
+	unsigned assigned=1;
+	List *list;
+
+	while(assigned){
+		// Search within a range for Vectors to assign to the cluster
+		list = cube->range_search( &((cent->array)[index].vec), R);
 
 		// Assign the found Vectors to this Centroid
 		assigned = assign_list(ass_vecs, cent, index, list);
@@ -371,4 +420,3 @@ void report_results(std::string filename, string algorithm, bool complete,
 		}
 	}
 }
-

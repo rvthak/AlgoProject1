@@ -64,6 +64,16 @@ void Hypercube::loadVectors(VectorArray *arr)
 	}
 }
 
+
+void Hypercube::loadVectors(AssignmentArray *arr)
+{
+	for(unsigned i = 0; i < (arr->size); i++)
+	{
+		this->add(&((arr->array)[i]));
+	}
+}
+
+
 void Hypercube::set_search_limits(unsigned probes, unsigned M, unsigned k)
 {
 	this->probes = probes;
@@ -199,6 +209,17 @@ List* Hypercube::range_search(double range)
 
 		current_list_node = current_list_node->next;
 	}
+
+	return final_list;
+}
+
+List* Hypercube::range_search(Vector* v, double range)
+{
+	// From the shorted list get the elements that have
+	// a distance in the range provided
+
+	List* final_list = new List();
+	
 
 	return final_list;
 }

@@ -24,7 +24,7 @@ RUNFLAGS_CUB=-o cube_out.txt -k 5 -M 10 -N 6 -R 450 -probes 3 -i $(INPUT_FILE) -
 
 RUNFLAGS_CLS_CLAS=-o cluster_out_classic.txt -m Classic   -complete -i $(INPUT_FILE) -c $(CONFIG_FILE)
 RUNFLAGS_CLS_LSH =-o cluster_out_lsh.txt     -m LSH       -complete -i $(INPUT_FILE) -c $(CONFIG_FILE)
-RUNFLAGS_CLS_CUBE=-o cluster_out_cube.txt    -m HyperCube -complete -i $(INPUT_FILE) -c $(CONFIG_FILE)
+RUNFLAGS_CLS_CUBE=-o cluster_out_cube.txt    -m Hypercube -complete -i $(INPUT_FILE) -c $(CONFIG_FILE)
 
 VGFLAGS=--leak-check=full --show-leak-kinds=all --leak-resolution=high --track-origins=yes
 
