@@ -268,7 +268,8 @@ void reverse_range_cube_assignment(AssignmentArray *ass_vecs, CentroidArray *cen
 
 	while(assigned){
 		// Search within a range for Vectors to assign to the cluster
-		list = cube->range_search( &((cent->array)[index].vec), R);
+		cube->search_hypercube(&((cent->array)[index].vec));
+		list = cube->range_search(R);
 
 		// Assign the found Vectors to this Centroid
 		assigned = assign_list(ass_vecs, cent, index, list);

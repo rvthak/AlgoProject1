@@ -38,7 +38,6 @@ struct Hypercube{
 	void search_hypercube(Vector *query);
 	ShortedList* k_nearest_neighbors_search(unsigned k);
 	List* range_search(double range);
-	List* range_search(Vector* v, double range);
 };
 
 #endif

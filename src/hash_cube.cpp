@@ -212,14 +212,3 @@ List* Hypercube::range_search(double range)
 
 	return final_list;
 }
-
-List* Hypercube::range_search(Vector* v, double range)
-{
-	// From the shorted list get the elements that have
-	// a distance in the range provided
-
-	List* final_list = new List();
-	
-
-	return final_list;
-}
