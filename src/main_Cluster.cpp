@@ -6,12 +6,13 @@
 #include "Vector.h"
 #include "hash_lsh.h"
 #include "hash_cube.h"
-#include "Silhouette.h"
 
 using namespace std;
-#define INITIAL_R 50
+#define INITIAL_R 100
 
 Centroid *exact_centroid(Vector *v, CentroidArray *cent, double *d);
+Centroid *second_centroid(Vector *v, CentroidArray *cent, double *d, Centroid *assigned);
+
 void Classic_assignment(AssignmentArray *ass_vecs, CentroidArray *cent);
 void Lsh_assignment(AssignmentArray *ass_vecs, MultiHash *lsh, CentroidArray *cent);
 void Cube_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int M, int k, int probes);
@@ -19,9 +20,11 @@ void Cube_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, int M, int 
 void reverse_range_lsh_assignment(AssignmentArray *ass_vecs, CentroidArray *cent, unsigned index, MultiHash *lsh);
 unsigned assign_list(AssignmentArray *ass_vecs, CentroidArray *cent, unsigned index, List *list);
 
-void report_results(std::string filename, string algorithm,
-	 									vector<float> silhouette_results, CentroidArray* all_centroids,
-										bool complete_results);
+std::vector<double> get_sihlouette(CentroidArray *cent);
+double avg_cluster_distance(Vector *p, Centroid *c, int index);
+
+void report_results(std::string filename, string algorithm, bool complete,
+	 				vector<double> silhouette_results, CentroidArray* all_centroids);
 
 int main(int argc, char *argv[]){
 	print_header();
@@ -29,6 +32,8 @@ int main(int argc, char *argv[]){
 	// A struct to store the program parameters
 	ARGS_Cluster args;
 	string algorithm;
+	Timer t;
+	unsigned iterations=0;
 
 	// Read the given terminal args (if any), and store any args you find
 	args.read_terminal(argc, argv);
@@ -39,10 +44,12 @@ int main(int argc, char *argv[]){
 	AssignmentArray ass_vecs(args.input_file);
 	//ass_vecs.print();
 
+	std::cout << "\033[36;1m (I)\033[33;1m Initializing Centroids.. " << std::endl; t.tic();
 	// Create and initialize the Cluster Centroids
 	CentroidArray cent(args.k);
-	cent.initialize_random(&ass_vecs);
+	cent.initialize_plus_plus(&ass_vecs);
 	//cent.print();
+	std::cout << "\033[36;1m (T) \033[33;1mCompleted in: \033[0m" << t.toc() << " \033[33;1msec\033[0m" << std::endl << std::endl;
 
 	// Create LSH/Cube structs if needed
 	MultiHash *lsh;
@@ -54,6 +61,7 @@ int main(int argc, char *argv[]){
 		lsh->loadVectors(&ass_vecs);
 	}
 
+	std::cout << "\033[36;1m (I)\033[33;1m Running Lloyds... " << std::endl;  t.tic();
 	// While there are assignment changes
 	while( cent.changed() ){
 
@@ -62,18 +70,15 @@ int main(int argc, char *argv[]){
 
 		// cout << " Assignment: " << endl;
 		// < Assignment Stage > : Assign each Vector to its nearest Centroid's Cluster
-		if( args.method == "Classic" )
-		{
+		if( args.method == "Classic" ) {
 			algorithm = "Lloyds";
 			Classic_assignment(&ass_vecs, &cent);
 		}
-		else if( args.method == "LSH" )
-		{
+		else if( args.method == "LSH" ) {
 			algorithm = "LSH Range Search";
 			Lsh_assignment(&ass_vecs, lsh, &cent);
 		}
-		else
-		{
+		else {
 			algorithm = "Hypercube Range Search";
 			Cube_assignment(&ass_vecs, &cent, args.M, args.k_cube, args.probes);
 		}
@@ -81,16 +86,17 @@ int main(int argc, char *argv[]){
 		// cout << " Update: " << endl;
 		// < Update State > : Update Centroids
 		ass_vecs.update_centroids(&cent);
+		iterations++;
 	}
+	std::cout << "\033[36;1m (T) \033[33;1mCompleted in " << iterations << " iterations: \033[0m" << t.toc() << " \033[33;1msec\033[0m" << std::endl << std::endl;
 
-	unsigned cluster_count = args.k;
-	Silhouette silhouette(cluster_count, &cent, &ass_vecs);
-	vector<float> silhouette_report_array = silhouette.generate_report_array();
+
+	std::cout << "\033[36;1m (I)\033[33;1m Calculating Silhouette... " << std::endl;  t.tic();
+	vector<double> silhouette = get_sihlouette(&cent);
+	report_results(args.output_file, algorithm, args.complete, silhouette, &cent);
+	std::cout << "\033[36;1m (T) \033[33;1mCompleted in: \033[0m" << t.toc() << " \033[33;1msec\033[0m" << std::endl;
 
 	print_footer();
-
-	report_results(args.output_file, algorithm, silhouette_report_array, &cent, args.complete);
-
 	if( args.method == "LSH" ){ delete lsh; }
 	return 0;
 }
@@ -168,6 +174,40 @@ Centroid *exact_centroid(Vector *v, CentroidArray *cent, double *d){
 	return near;
 }
 
+// Returns the second nearest Centroid (that is not the given centroid)
+Centroid *second_centroid(Vector *v, CentroidArray *cent, double *d, Centroid *assigned){
+	Centroid *near;
+	double min_dist, dist;
+	unsigned start=1;
+
+	// Set the first Centroid as the nearest for now
+	near = &((cent->array)[0]);
+
+	// Ensure we never set the assigned Centroid as the nearest
+	if( near == assigned ){
+		near = &((cent->array)[1]);
+		start++;
+	}
+	min_dist = v->l2( &(near->vec) );
+
+	// For each remaining Centroid
+	for(unsigned i=start; i<(cent->size); i++){
+
+		if( &((cent->array)[i]) != assigned ){
+			// Calculate the Vector's exact distance
+			dist = v->l2( &((cent->array)[i].vec) );
+
+			// If it is the nearest Centroid => store it
+			if( dist < min_dist ){
+				min_dist = dist;
+				near = &((cent->array)[i]);
+			}
+		}
+	}
+	*d = min_dist;
+	return near;
+}
+
 //------------------------------------------------------------------------------------------------------------------
 
 // Reverse Range Search using lsh
@@ -214,7 +254,6 @@ unsigned assign_list(AssignmentArray *ass_vecs, CentroidArray *cent, unsigned in
 				(cent->array)[index].assign(cur->data);
 				ass_vecs->assign(cur->data->id, &((cent->array)[index]), (cent->array)[index].l2(cur->data) );
 			}
-
 		}
 		// Else it is already assigned to this Cluster => Do nothing
 
@@ -224,12 +263,73 @@ unsigned assign_list(AssignmentArray *ass_vecs, CentroidArray *cent, unsigned in
 	return count;
 }
 
+//------------------------------------------------------------------------------------------------------------------
+
+// Get a vector containing the Cluster assignment Silhouettes
+std::vector<double> get_sihlouette(CentroidArray *cent){
+	std::vector<double> sil;
+	double total_sum=0, total_size=0;
+	double a,b, s, tmp;
+	Centroid *cur, *second;
+	Vector *v;
+
+	// For each Cluster
+	for(unsigned i=0; i<(cent->size); i++){
+		cur = &((cent->array)[i]);
+		s=0;
+
+		// For each Vector in this Cluster
+		for( unsigned j=0; j<(cur->cluster_size); j++){
+			v = (cur->assignments)[j];
+
+			// Get its average distance with every other vector of its own Cluste
+			a = avg_cluster_distance(v,cur,j);
+
+			// Get the second nearest centroid
+			second = second_centroid(v, cent, &tmp, cur);
+
+			// Get its average distance with every other vector of the next best Cluste
+			b = avg_cluster_distance(v,second,-1);
+
+			// Get the silhouette of this Vector
+			s += (b-a) / max(a,b);
+		}
+		total_sum  += s;
+		total_size += (cur->cluster_size);
+
+		// Store the cluster silhouette average
+		sil.push_back( s/(cur->cluster_size) );
+	}
+
+	sil.push_back( total_sum / total_size );
+	return sil;
+}
+
+// Return the average distance between the given Vector and all the elements of the given Cluster
+double avg_cluster_distance(Vector *p, Centroid *c, int index){
+	double dist;
+
+	if( index >=0 ){ // The given Vector belongs in the given Cluster
+		for(unsigned i=0; i<(c->cluster_size); i++){
+			if( i != (unsigned)index ){
+				dist += p->l2( (c->assignments)[i] );
+			}
+		}
+		dist = dist / ((c->cluster_size)-1) ;
+	}
+	else{ // The given Vector doesn't belong in the given Cluster
+		for(unsigned i=0; i<(c->cluster_size); i++){
+			dist += p->l2( (c->assignments)[i] );
+		}
+		dist = dist / (c->cluster_size);
+	}
+	return dist;
+}
 
 //------------------------------------------------------------------------------------------------------------------
 
-void report_results(std::string filename, string algorithm,
-	 									vector<float> silhouette_results, CentroidArray* all_centroids,
-										bool complete_results)
+void report_results(std::string filename, string algorithm, bool complete,
+	 				vector<double> silhouette_results, CentroidArray* all_centroids)
 {
 	std::ofstream file;
 
@@ -256,11 +356,11 @@ void report_results(std::string filename, string algorithm,
 	}
 	file << "]" << endl << endl;
 
-	if (complete_results == true){
+	if (complete == true){
 
 		for (unsigned i = 0; i < all_centroids->size; i++)
 		{
-			file << "CLUSTER-" << i << " { centroid : ";
+			file << "CLUSTER-" << i << " { centroid, ";
 
 			for (unsigned k = 0; k < (all_centroids->array)[i].cluster_size; k++)
 			{
@@ -271,3 +371,4 @@ void report_results(std::string filename, string algorithm,
 		}
 	}
 }
+

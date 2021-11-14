@@ -2,6 +2,7 @@
 #include "Vector.h"
 #include "shortedList.h"
 #include <cmath>
+#include <ctime>
 #include <cstdlib>
 #include <fstream>
 #include <sstream>
@@ -34,10 +35,7 @@ double Vector::l2(Vector *p){
 
 //------------------------------------------------------------------------------------------------------------------
 
-// CHRIS 12.11.21 START
-
-VectorArray::VectorArray(unsigned size)
-{
+VectorArray::VectorArray(unsigned size){
 	this->size = size;
 
 	// Allocate memory to store the file records
@@ -47,8 +45,6 @@ VectorArray::VectorArray(unsigned size)
 		exit(1);
 	}
 }
-
-// CHRIS 12.11.21 END
 
 // Create a VectorArray containing the given file contents
 VectorArray::VectorArray(string filename){
@@ -205,13 +201,14 @@ void CentroidArray::initialize_random(void *ass_vecs){
 	// A vector containing the indexes of the already assigned Initial Centroid-Vectors
 	std::vector<int> assigned_indexes;
 	unsigned random_index;
+	srand(time(NULL));
 
 	// Get a random Vector for each Centroid
 	for(unsigned i=0; i<(this->size); i++){
 
 		do{
 			// Get a random Vector from the AssignmentArray
-			random_index = rand()%(this->size);
+			random_index = rand()%( ((AssignmentArray *)ass_vecs)->size );
 		// Ensure that it hasn't already been selected as a Centroid
 		}while( find(assigned_indexes.begin(), assigned_indexes.end(), random_index) != assigned_indexes.end() );
 
@@ -225,12 +222,69 @@ void CentroidArray::initialize_random(void *ass_vecs){
 
 // Use a probabilistic function to attempt to get good initial values for the Centroids
 void CentroidArray::initialize_plus_plus(void *ass_vecs){
+	unsigned selected_count=1, total=this->size;
+	int max_index;
+	std::vector<unsigned>   selected_indexes;
+	double prob, max_prob;
+	Vector *v;
+	srand(time(NULL));
 
+	// Choose a random centroid uniformly
+	selected_indexes.push_back( rand() % (((AssignmentArray *)ass_vecs)->size) );
+	(this->array)[0].copy_Vec( &((((AssignmentArray *)ass_vecs)->array)[ selected_indexes[0] ]) );
+
+	// While we need to select more Centroids
+	while( selected_count < total ){
+		max_prob=-1; max_index=-1;
+
+		// For each non-Centroid Vector
+		for(unsigned i=0; i<( ((AssignmentArray *)ass_vecs)->size ); i++){
+			if( !index_exists(i, &selected_indexes) ){
+				v = &((((AssignmentArray *)ass_vecs)->array)[i]);
+
+				// Get the probability of this Vector being a good next Centroid based on the already selected Centroids
+				prob = this->get_prob(v, selected_count);
+
+				// Store the Vector with the highest probability
+				if( prob > max_prob ){
+					max_prob = prob;
+					max_index = i;
+				}
+			}
+		}
+		// Assign the Vector with the highest probability as the next Centroid
+		selected_indexes.push_back( max_index );
+		(this->array)[ selected_count ].copy_Vec( &((((AssignmentArray *)ass_vecs)->array)[ max_index ]) );
+		selected_count++;
+	}
+
+	// cout << " Selected centroids: " << endl;
+	// for (int i = 0; i < selected_indexes.size(); ++i)
+	// {
+	// 	cout << selected_indexes[i] << ", ";
+	// } cout << endl;
 }
 
-// Attempt to select Centroids close to the dataset's center of mass
-void CentroidArray::initialize_concentrate(void *ass_vecs){
+// For the given Vector: calculate its probability of being a good choice for a Centroid 
+// based on the formula on slide 45
+double CentroidArray::get_prob(Vector *v, unsigned selected){
+	double dist, min_dist=-1, dist_sum=0;
 
+	// For each already selected Centroid
+	for(unsigned i=0; i<selected; i++){
+
+		// Calc the distance between the given Vector and this Centroid
+		dist = (this->array)[i].l2(v);
+
+		// Store the min distance
+		if( positive_less_than(dist, min_dist) ){
+			min_dist = dist;
+		}
+
+		// Calc the squared sum
+		dist_sum += dist*dist;
+	}
+	return (min_dist*min_dist)/dist_sum;
 }
 
 // Prints all the Centroids Stored
@@ -290,10 +344,7 @@ AssignmentArray::AssignmentArray(std::string filename){
 	}
 }
 
-AssignmentArray::~AssignmentArray(){
-	delete [] this->array;
-}
-
+AssignmentArray::~AssignmentArray(){ delete [] this->array; }
 
 // Store the Centroid and distance assigned to the Vector with the given id
 void AssignmentArray::assign(unsigned id, Centroid *centroid, double dist){

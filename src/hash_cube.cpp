@@ -79,7 +79,7 @@ int Hypercube::project_query_vector(Vector* query_vector)
 
 int Hypercube::get_next_bucket_key(int last_bucket_key)
 {
-	vector<int> hamming_distance_limits { 5, 4, 3, 2, 1 };  // TODO : CHECK IF THIS IS CORRECT ORDER
+	vector<int> hamming_distance_limits { 5, 4, 3, 2, 1 }; 
 
 	for (unsigned i = 0; i < hamming_distance_limits.size(); i++)
 	{

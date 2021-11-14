@@ -65,12 +65,13 @@ struct CentroidArray{
 
 	void initialize_random(void *ass_vecs);
 	void initialize_plus_plus(void *ass_vecs);
-	void initialize_concentrate(void *ass_vecs);
 
 	void reset_clusters();
 	int  get_index(Vector *vec);
 	bool changed();
 	void print();
+private:
+	double get_prob(Vector *v, unsigned selected);
 };
 
 //------------------------------------------------------------------------------------------------------------------

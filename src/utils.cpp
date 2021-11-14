@@ -72,6 +72,12 @@ bool question(string q){
 	}
 }
 
+// Return max 
+double max(double x, double y){
+	if( x > y ){ return x; }
+	return y;
+}
+
 // Modulo : Always positive
 unsigned mod(unsigned x, unsigned y){
 	if( x<0 ){ x*=(-1); }
@@ -196,4 +202,40 @@ std::vector<int> div_vector(std::vector<int> *x, unsigned d){
 		div.push_back( (*x)[i] / d );
 	}
 	return div;
+}
+
+// Sum the elements of the given array
+double sum_vector_elems(std::vector<double> *v){
+	double sum=0;
+	for(unsigned i=0; i<(v->size()); i++){
+		sum += (*v)[i];
+	}
+	return sum;
+}
+
+// Return true if the given index is stored in the vector
+bool index_exists(unsigned index, std::vector<unsigned> *v){
+	for(unsigned i=0; i<(v->size()); i++){
+		if( (*v)[i] == index ){ return true; }
+	}
+	return false;
+}
+
+// return true if x is less than y, but consider negative numbers == +inf
+// True if x < y
+bool positive_less_than(double x, double y){
+	// Different signs
+	if( x<0 && y>0 ){
+		return false;
+	}
+	else if( x>0 && y<0 ){
+		return true;
+	}
+	// Both are negative
+	else if( x<0 && y<0 ){
+		return false;
+	}
+	// Both are positive
+	if(x<y){ return true; }
+	return false;
 }
