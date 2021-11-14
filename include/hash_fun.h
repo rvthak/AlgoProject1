@@ -39,7 +39,7 @@ struct F {
 	F(unsigned k, unsigned dimensions, unsigned table_size);
 	~F();
 
-	int hash(Vector *p);
+	unsigned hash(Vector *p);
 };
 
 #endif

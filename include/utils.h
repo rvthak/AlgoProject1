@@ -24,8 +24,8 @@ void print_total_time(double time);
 void print_structs_created(double time);
 
 int hamming_distance(int a, int b);
-int convert_bit_array_to_decimal(std::vector<int> bit_array);
-int generate_bit_from_h_key(int h_key);
+unsigned convert_bit_array_to_decimal(std::vector<unsigned> bit_array);
+unsigned generate_bit_from_h_key(unsigned h_key);
 
 double dot_product(std::vector<int> x, std::vector<double> y);
 std::vector<int> sum_vectors(std::vector<int> *x, std::vector<int> *y);

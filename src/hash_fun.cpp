@@ -110,14 +110,15 @@ F::~F(){
 	}
 }
 
-int F::hash(Vector *p){
-	int hash_key_from_array, final_hash_key;
-	std::vector<int> bit_array;
+unsigned F::hash(Vector *p){
+	unsigned hash_key_from_array, final_hash_key;
+	std::vector<unsigned> bit_array;
+	unsigned h_key, bit;
 
 	for(unsigned i = 0; i < (this->k); i++)
 	{
-		int h_key = (this->h)[i]->hash(p);
-		int bit = generate_bit_from_h_key(h_key);
+		h_key = (this->h)[i]->hash(p);
+		bit = generate_bit_from_h_key(h_key);
 		bit_array.push_back(bit);
 	}
 
