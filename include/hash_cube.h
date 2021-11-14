@@ -10,7 +10,7 @@
 
 using namespace std;
 
-#define DIVISION_SIZE_CUBE 4
+#define DIVISION_SIZE_CUBE 16
 
 // Sinple Hash Table Struct that uses randomized Hash Functions
 struct Hypercube{
