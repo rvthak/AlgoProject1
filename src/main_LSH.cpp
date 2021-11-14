@@ -8,6 +8,8 @@
 #include "hash_lsh.h"
 #include "shortedList.h"
 
+//------------------------------------------------------------------------------------------------------------------
+
 // Variables Used for Performance Statistics
 double ratio_sum=0;
 unsigned long count=0;
@@ -26,6 +28,7 @@ void report_results(std::string filename, unsigned id,
 	                ShortedList *naive, double naive_t, 
 	                List *range,        double range_t);
 
+//------------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char *argv[]){
 	bool running = true;

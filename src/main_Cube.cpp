@@ -8,14 +8,27 @@
 #include <iostream>
 #include <fstream>
 
-// Variables Used for Performance Statistics
-double ratio_sum = 0;
-unsigned long count = 0;
+//------------------------------------------------------------------------------------------------------------------
 
+// Variables Used for Performance Statistics
+double ratio_sum=0;
+unsigned long count=0;
+
+std::vector<double> dist_divergence;
+
+double cube_time_sum=0;
+double range_time_sum=0;
+double true_time_sum=0;
+unsigned long time_count=0;
+
+void reset_stats();
+void report_statistics(double total_time);
 void report_results(std::string filename, unsigned id,
 	                ShortedList *hypercube_results, double hypercube_time,
 	                ShortedList *naive, double naive_time,
-	                List *range_results);
+	                List *range_results, double range_time);
+
+//------------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char *argv[]){
 	bool running = true;
@@ -25,8 +38,8 @@ int main(int argc, char *argv[]){
 	ARGS_Cube args;
 
 	// Create a Timer to time the tests
-	Timer timer;
-	double hypercube_time, naive_time;
+	Timer timer, t;
+	double hypercube_time, naive_time, range_time;
 
 	// Pointers to the test results
 	ShortedList *hypercube_results, *naive_results;
@@ -43,35 +56,41 @@ int main(int argc, char *argv[]){
 		// Ask for args (Asks only for "Empty" args)
 		args.read_args();
 
+		std::cout << "\033[36;1m (I)\033[33;1m Creating Structs and Loading Data... " << std::endl;
+		t.tic();
 		// Load both the input and query file data
 		VectorArray input_vecs(args.input_file);
 		VectorArray query_vecs(args.query_file);
 
-		// Testing the cube structure
+		// Create the Cube structure
 		Hypercube hypercube(args.k, getFileLines(args.input_file)/DIVISION_SIZE_CUBE, getFileLineLength(args.input_file)-1);
-
 		hypercube.set_search_limits(args.probes, args.M, args.k);
 		hypercube.loadVectors(&input_vecs);
+		print_structs_created(t.toc());
 
-		for(unsigned i = 0; i < (query_vecs.size); i++)
-		{
+		t.tic();
+		// For each query Vector:
+		for(unsigned i = 0; i < (query_vecs.size); i++) {
+
 			Vector *query_vector = &((query_vecs.array)[i]);
 			hypercube.search_hypercube(query_vector);
-			timer.tic(); hypercube_results = hypercube.k_nearest_neighbors_search(args.N);              hypercube_time = timer.toc();
+			timer.tic(); hypercube_results = hypercube.k_nearest_neighbors_search(args.N);            hypercube_time = timer.toc();
 			timer.tic(); naive_results = (ShortedList*)(input_vecs.kNN_naive(query_vector, args.N));  naive_time = timer.toc();
-			range_results = hypercube.range_search(args.R);
+			timer.tic(); range_results = hypercube.range_search(args.R);                              range_time = timer.toc();
 
 			report_results(args.output_file, query_vector->id,
 				 						 hypercube_results, hypercube_time,
 				 						 naive_results, naive_time,
-										 range_results);
+										 range_results, range_time);
 
 			// Results written in output file => Free the memory
 			delete hypercube_results; delete range_results; delete naive_results;
-		}
+		} std::cout << std::endl;
+		report_statistics( t.toc() );
 
 		// Clear the old args
 		args.clear();
+		reset_stats();
 		break;
 
 		// Ask user if he wants to stop the program
@@ -88,7 +107,7 @@ int main(int argc, char *argv[]){
 void report_results(std::string filename, unsigned id,
 	                ShortedList *hypercube_results, double hypercube_time,
 	                ShortedList *naive, double naive_time,
-	                List *range_results)
+	                List *range_results, double range_time)
 {
 	unsigned i=1;
  	std::ofstream file;
@@ -108,6 +127,7 @@ void report_results(std::string filename, unsigned id,
 
 		ratio_sum += hypercube_p->dist / naive_p->dist;
 		count++;
+		dist_divergence.push_back( hypercube_p->dist / naive_p->dist );
 
 		hypercube_p   = hypercube_p->next;
 		naive_p = naive_p->next;
@@ -116,6 +136,9 @@ void report_results(std::string filename, unsigned id,
 	// Write the test times
 	file << "tHypercube:  "  << hypercube_time   << std::endl;
 	file << "tTrue: " << naive_time << std::endl;
+
+	cube_time_sum += hypercube_time; true_time_sum += naive_time; range_time_sum += range_time;
+	time_count++;
 
 	// Write the Range search results
 	file << "R-near neighbors:" << std::endl;
@@ -126,4 +149,50 @@ void report_results(std::string filename, unsigned id,
 		cur = cur->next;
 	}
   	file << std::endl;
+}
+
+
+void report_statistics(double total_time){
+
+	// Calculate the distance Divergence Mean
+	double mean_div = ratio_sum/count;
+
+	// Calculate the distance Divergence Variance
+	double variance_div=0, tmp;
+
+	for(unsigned i=0; i<count; i++){
+		tmp = dist_divergence[i] - mean_div;
+		variance_div += tmp*tmp;
+	}
+	variance_div = variance_div/(count-1);
+
+	// Calculate the mean cube time
+	double mean_cube = cube_time_sum/time_count;
+
+	// Calculate the mean true time
+	double mean_true = true_time_sum/time_count;
+
+	// Calculate the mean true time
+	double range_true = range_time_sum/time_count;
+
+	std::cout << "\033[36;1m (D) \033[33;1mDistance Divergence Mean:     \033[0m" << mean_div << std::endl;
+	std::cout << "\033[36;1m (D) \033[33;1mDistance Divergence Variance: \033[0m" << variance_div << std::endl << std::endl;
+
+	std::cout << "\033[36;1m (T) \033[33;1mMean cube time:  \033[0m" << mean_cube << " \033[33;1msec\033[0m" << std::endl;
+	std::cout << "\033[36;1m (T) \033[33;1mMean true time:  \033[0m" << mean_true << " \033[33;1msec\033[0m" << std::endl;
+	std::cout << "\033[36;1m (T) \033[33;1mMean range time: \033[0m" << range_true << " \033[33;1msec\033[0m" << std::endl;
+	std::cout << "\033[36;1m (T) \033[33;1mTotal time:      \033[0m" << total_time << " \033[33;1msec\033[0m" << std::endl << std::endl;
+
+	std::cout << "\033[36;1m (R) \033[33;1mlsh to true ratio:   \033[0m" << mean_true/mean_cube << std::endl;
+	std::cout << "\033[36;1m (R) \033[33;1mrange to true ratio: \033[0m" << mean_true/range_true << std::endl << std::endl;
+}
+
+void reset_stats(){
+	count=0;
+	ratio_sum=0;
+	time_count=0;
+	cube_time_sum=0;
+	true_time_sum=0;
+	range_time_sum=0;
+	dist_divergence.clear();
 }
