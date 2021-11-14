@@ -52,7 +52,8 @@ int main(int argc, char *argv[]){
 	std::cout << "\033[36;1m (I)\033[33;1m Initializing Centroids.. " << std::endl; t.tic();
 	// Create and initialize the Cluster Centroids
 	CentroidArray cent(args.k);
-	cent.initialize_plus_plus(&ass_vecs);
+	//cent.initialize_plus_plus(&ass_vecs);
+	cent.initialize_random(&ass_vecs);
 	//cent.print();
 	std::cout << "\033[36;1m (T) \033[33;1mCompleted in: \033[0m" << t.toc() << " \033[33;1msec\033[0m" << std::endl << std::endl;
 
