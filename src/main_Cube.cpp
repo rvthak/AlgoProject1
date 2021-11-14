@@ -91,7 +91,6 @@ int main(int argc, char *argv[]){
 		// Clear the old args
 		args.clear();
 		reset_stats();
-		break;
 
 		// Ask user if he wants to stop the program
 		running = !question(" Would you like to exit the program?");
